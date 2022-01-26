@@ -205,7 +205,7 @@ Your Password:Dumb,I-kill-you,p@ssword,crappy,stupidity,genious,mob!le,admin,adm
 <p>但是配合<strong>rand(0)*2</strong>就会出现魔法</p>
 <p>首先: <strong>rand(0)*2</strong>生成了一个 [0,2] 的伪静态数列</p>
 <p>配合**floor()**使用就生成了一个只有0和1的伪静态数列,如图:</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126111656.png"></p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126111656.png" alt="figure 2"></p>
 <p><strong>注意!!这串序列是固定的011011….</strong></p>
 <p>讲一下,count()<strong>和</strong>count(*)<strong>的区别在</strong>count(*)不会忽略null值</p>
 <p>搭配<strong>group by</strong>使用也很常规 不多说了</p>
@@ -213,11 +213,11 @@ Your Password:Dumb,I-kill-you,p@ssword,crappy,stupidity,genious,mob!le,admin,adm
 <pre><code>语句:SELECT count(*) from users group by concat(database(),floor(rand(0)*2))
 </code></pre>
 <p>产生报错,如图:</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126112846.png"></p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126112846.png" alt="figure 3"></p>
 <p><strong>为什么捏为什么捏发生什么事了捏?</strong></p>
 <p>事情是这样发生的:</p>
 <p>首先<strong>group by</strong>会生成一个临时表</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126113822.png"></p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220126113822.png" alt="figure 4"></p>
 <p><strong>本来过程应该是这样的:</strong></p>
 <p>第一位选手:security0, 检索临时表, 表内没有已有的符合条件的key, 所以插入一个security0的key, count(*)计数+1</p>
 <p><strong>但实际上是这样的:</strong></p>
