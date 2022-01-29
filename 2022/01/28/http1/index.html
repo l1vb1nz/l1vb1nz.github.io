@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#3367D6"/>
+  <link rel="apple-touch-icon" href="/icons-192.png">
+  <link rel="manifest" href="/manifest.json">
+  
+  <meta name="generator" content="Hexo 6.0.0">
+
+  
+
+  
+
+  
+    <meta name="author" content="b1nz">
+  
+
+  
+
+  
+
+  <title>HTTP系列1-HTTP/0.9-HTTP/1.0 | Liv_binz的技术博客</title>
+
+  
+
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@1.1.3/index.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/styles/monokai.css">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+  <div class="root-container">
+    
+<!-- header container -->
+<header class="header-container post">
+  
+    <div class="post-image" style="background-image: url(/cover.jpg)"></div>
+  
+
+  <!-- navbar -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <!-- logo -->
+    <div class="navbar-logo">
+      <a href="/">
+        
+          Liv_binz的技术博客
+        
+      </a>
+    </div>
+    <!-- link -->
+    <div class="navbar-link">
+      <div class="navbar-btn">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <ul class="navbar-list">
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+    <div class="header-content">
+      <div class="post-text layout-block">
+        <div class="layout-margin">
+          <h1 class="title-wrap">HTTP系列1-HTTP/0.9-HTTP/1.0</h1>
+          <h2 class="title-sub-wrap">
+            <strong>b1nz</strong>
+            <span>发布于</span>
+            <time  class="article-date" datetime="2022-01-27T19:34:39.483Z" itemprop="datePublished">2022-01-28</time>
+          </h2>
+          <ul class="wrap-list dark">
+  
+    <li><a href="/categories/networking/">📒 networking</a></li>
+  
+</ul>
+          <ul class="wrap-list dark">
+  
+    <li><a href="/tags/http/">🏷️ http</a></li>
+  
+</ul>
+        </div>
+      </div>
+    </div>
+  
+
+  
+  
+  
+</header>
+
+    <!-- 文章 -->
+
+<!-- 文章内容 -->
+<div class="body-container">
+  <article class="content-container layout-block post-container">
+    <div class="article-info">
+      
+      
+      
+      
+      <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
+        <h1 id="HTTP系列1-HTTP-0-9-HTTP-1-0-HTTP1-1"><a href="#HTTP系列1-HTTP-0-9-HTTP-1-0-HTTP1-1" class="headerlink" title="HTTP系列1-HTTP/0.9-HTTP/1.0/HTTP1.1"></a>HTTP系列1-HTTP/0.9-HTTP/1.0/HTTP1.1</h1><blockquote>
+<p>过了这么久, 我还是觉得对HTTP一知半解的</p>
+<p>HF上的大佬是这样说的:</p>
+<p>“Most people think they understand the internet, they are wrong. Can you write out a full HTTP request and response? Do you know every HTTP verb? Do you know the difference between HTTP 1.0 and HTTP 1.1 and HTTP 2.0 or HTTP 0.9 without having to research it? Do you know most of the HTTP response codes, not just general information but specific codes. Do you know how a CDE works?”</p>
+<p>感觉有被骂到</p>
+<p>于是半夜我从床上爬起来决定把这个硬骨头彻底解决了!</p>
+<p>Resource:</p>
+<ol>
+<li>(阮老师的博客)HTTP协议入门</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2016/08/http.html">https://www.ruanyifeng.com/blog/2016/08/http.html</a></p>
+<ol start="2">
+<li>RFC2616</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://www.ietf.org/rfc/rfc2616.txt">https://www.ietf.org/rfc/rfc2616.txt</a></p>
+<ol start="3">
+<li>RFC1945</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc1945#section-1.1">https://datatracker.ietf.org/doc/html/rfc1945#section-1.1</a></p>
+<ol start="4">
+<li>MDN Web docs</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/Evolution_of_HTTP">https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/Evolution_of_HTTP</a></p>
+</blockquote>
+<h1 id="HTTP-0-9"><a href="#HTTP-0-9" class="headerlink" title="HTTP/0.9"></a>HTTP/0.9</h1><p>HTTP 最早版本是1991年发布的0.9版, 基于TCP/IP, 是一个非常简单的用来传输raw data的协议 (不涉及数据包传输, 只能发送纯文本) , 默认使用80端口. </p>
+<h3 id="请求方式-Method"><a href="#请求方式-Method" class="headerlink" title="请求方式 (Method)"></a>请求方式 (Method)</h3><p>只有一个请求方式 <code>GET</code></p>
+<h3 id="请求-Request"><a href="#请求-Request" class="headerlink" title="请求 (Request)"></a>请求 (Request)</h3><p>HTTP 0.9 的请求是单行的, 请求方式后跟目标资源路径, 如下:</p>
+<pre><code>GET /B1nz.html
+</code></pre>
+<h3 id="响应-Response"><a href="#响应-Response" class="headerlink" title="响应 (Response)"></a>响应 (Response)</h3><p>响应只包含目标资源本身, 如下:</p>
+<pre><code>&lt;HTML&gt;
+  &lt;body&gt;&lt;h1&gt;B1nz&lt;/h1&gt;&lt;/body&gt;
+&lt;/HTML&gt;
+</code></pre>
+<h1 id="HTTP-1-0"><a href="#HTTP-1-0" class="headerlink" title="HTTP/1.0"></a>HTTP/1.0</h1><p>HTTP/1.0 基于 HTTP/0.9 做了以下的扩展</p>
+<ul>
+<li>格式改变: 头域 (Header Field)</li>
+<li>可以发送任何格式的文件</li>
+<li>新增请求方式</li>
+<li>状态码</li>
+<li>权限（authorization）</li>
+<li>缓存（cache）</li>
+<li>内容编码（content encoding）</li>
+</ul>
+<h3 id="请求方式-Method-1"><a href="#请求方式-Method-1" class="headerlink" title="请求方式 (Method)"></a>请求方式 (Method)</h3><p>新增了两种请求方式</p>
+<pre><code>1. &quot;GET&quot;
+2. &quot;HEAD&quot;
+3. &quot;POST&quot;
+</code></pre>
+<p>来看看RFC里面的定义吧:</p>
+<p><strong>HEAD:</strong></p>
+<blockquote>
+<p>The HEAD method is identical to GET except that the server must not<br>   return any Entity-Body in the response. The metainformation contained<br>   in the HTTP headers in response to a HEAD request should be identical<br>   to the information sent in response to a GET request. This method can<br>   be used for obtaining metainformation about the resource identified<br>   by the Request-URI without transferring the Entity-Body itself. This<br>   method is often used for testing hypertext links for validity,<br>   accessibility, and recent modification.</p>
+</blockquote>
+<blockquote>
+<p>There is no “conditional HEAD” request analogous to the conditional<br>   GET. If an If-Modified-Since header field is included with a HEAD<br>   request, it should be ignored.</p>
+</blockquote>
+<p><strong>B1nz的笔记:</strong></p>
+<p>HEAD请求和GET是一毛一样的,只不过不返回entity-body (消息体)</p>
+<p>所以说返回的有:</p>
+<ul>
+<li>Status-Line</li>
+<li>General-Header</li>
+<li>Response-Header</li>
+<li>Entity-Header</li>
+</ul>
+<p>HEAD请求可以用来:</p>
+<ul>
+<li>检查超链接的有效性</li>
+<li>检查网页近期是否被修改</li>
+<li>获得所有关于请求的元数据</li>
+</ul>
+<p><strong>POST:</strong> (我们熟悉的家伙出生了)</p>
+<blockquote>
+<p>The POST method is used to request that the destination server accept<br>   the entity enclosed in the request as a new subordinate of the<br>   resource identified by the Request-URI in the Request-Line. POST is<br>   designed to allow a uniform method to cover the following functions:</p>
+</blockquote>
+<blockquote>
+<p>  o Annotation of existing resources;</p>
+</blockquote>
+<blockquote>
+<p>  o Posting a message to a bulletin board, newsgroup, mailing list,<br>        or similar group of articles;</p>
+</blockquote>
+<blockquote>
+<p>  o Providing a block of data, such as the result of submitting a<br>        form, to a data-handling process;</p>
+</blockquote>
+<blockquote>
+<p>  o Extending a database through an append operation.</p>
+</blockquote>
+<blockquote>
+<p> The actual function performed by the POST method is determined by the<br>   server and is usually dependent on the Request-URI. The posted entity<br>   is subordinate to that URI in the same way that a file is subordinate<br>   to a directory containing it, a news article is subordinate to a<br>   newsgroup to which it is posted, or a record is subordinate to a<br>   database.</p>
+</blockquote>
+<blockquote>
+<p>A successful POST does not require that the entity be created as a<br>   resource on the origin server or made accessible for future<br>   reference. That is, the action performed by the POST method might not<br>   result in a resource that can be identified by a URI. In this case,<br>   either 200 (ok) or 204 (no content) is the appropriate response<br>   status, depending on whether or not the response includes an entity<br>   that describes the result.</p>
+</blockquote>
+<blockquote>
+<p>If a resource has been created on the origin server, the response<br>   should be 201 (created) and contain an entity (preferably of type<br>   “text/html”) which describes the status of the request and refers to<br>   the new resource.</p>
+</blockquote>
+<blockquote>
+<p>A valid Content-Length is required on all HTTP/1.0 POST requests. An<br>   HTTP/1.0 server should respond with a 400 (bad request) message if it<br>   cannot determine the length of the request message’s content.</p>
+</blockquote>
+<blockquote>
+<p>Applications must not cache responses to a POST request because the<br>   application has no way of knowing that the server would return an<br>   equivalent response on some future request.</p>
+</blockquote>
+<p><strong>B1nz的笔记:</strong></p>
+<p>其他不多说了,看到新的一点:</p>
+<p>GET方式会缓存. 而POST方式<u>不缓存</u></p>
+<h3 id="请求-Request-1"><a href="#请求-Request-1" class="headerlink" title="请求 (Request)"></a>请求 (Request)</h3><p>请求包含:</p>
+<ol>
+<li>请求命令</li>
+<li>各种头</li>
+<li>消息体</li>
+</ol>
+<p>请求命令:</p>
+<p>新增HTTP协议版本</p>
+<pre><code>GET /B1nz.html HTTP/1.0
+</code></pre>
+<p>请求头域（Request-header）包含:</p>
+<p><strong>1. Authorization</strong></p>
+<p>包含在头域内的一种验证方式 (下面的例子内是基础认证)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Authorization: Basic U2h1c2hlbmcwMDcldUZGMUFzczAwNw==</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. From</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">From: webmaster@w3.org</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>3. If-Modified-Since</strong></p>
+<p>修改信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">If-Modified-Since: Sat, 29 Oct 1994 19:43:31 GMT</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>4. Referer</strong></p>
+<p>客户端发送这个请求之前的位置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Referer: http://www.w3.org/hypertext/DataSources/Overview.html</span><br></pre></td></tr></table></figure>
+
+<p><strong>5. User-Agent</strong></p>
+<p>客户端信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User-Agent: Mozilla/5.0 (X11; Linux x86_64)</span><br></pre></td></tr></table></figure>
+
+<p>消息头域（Entity-header）包括:</p>
+<p><strong>1. Allow</strong></p>
+<p>允许的HTTP请求方法的集合</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Allow: GET, POST, HEAD</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. Content-Encoding</strong></p>
+<p>可以把数据压缩后在发送,此字段说明压缩的方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Encoding: x-gzip</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. Content-Length</strong></p>
+<p>单位是byte</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Length: 3495</span><br></pre></td></tr></table></figure>
+
+<p><strong>4. Content-Type</strong></p>
+<p>写的是 MIME type</p>
+<p>常见MIME Type如下:</p>
+<pre><code>表明文件是普通文本，理论上是人类可读:
+text/plain
+text/html
+text/css
+表明是某种图像。不包括视频，但是动态图（比如动态gif）也使用image类型:
+image/jpeg
+image/png
+image/svg+xml
+表明是某种音频文件:
+audio/mp4
+表明是某种视频文件:
+video/mp4
+表明是某种二进制数据:
+application/javascript
+application/pdf
+application/zip
+application/atom+xml
+</code></pre>
+<p>MIME Type 后接” ; “ 可以添加参数</p>
+<pre><code>例1:
+Content-Type: text/html; charset=utf-8
+注意:你可能发现某些内容在 text/javascript 媒体类型末尾有一个 charset 参数，指定用于表示代码内容的字符集。这不是合法的，而且在大多数场景下会导致脚本不被载入。
+例2:
+Content-Type: multipart/form-data; boundary=---------------------------872165604191141565395500449
+</code></pre>
+<p><strong>5. Expires</strong></p>
+<p>过了这个时间点后客户端不会再缓存此数据:</p>
+<pre><code>Expires: Thu, 01 Dec 1994 16:00:00 GMT
+</code></pre>
+<p><strong>6. Last-Modified</strong></p>
+<pre><code>Last-Modified: Tue, 15 Nov 1994 12:45:26 GMT
+</code></pre>
+<p><strong>7. extension-header</strong></p>
+<p>个人理解, 可以写好几个entity-header</p>
+<p>用的好像不是很多。官方也提示，对于这类头，接收方一般是忽略的。</p>
+<h3 id="响应（Response）"><a href="#响应（Response）" class="headerlink" title="响应（Response）"></a>响应（Response）</h3><p>响应包括：</p>
+<ol>
+<li>   响应命令</li>
+<li>各种头</li>
+<li>消息体</li>
+</ol>
+<p>响应命令：</p>
+<p>新增状态码和状态描述</p>
+<pre><code>HTTP/1.0 200 OK
+</code></pre>
+<p>状态码：</p>
+<pre><code>o 1xx: Informational - Not used, but reserved for future use
+
+o 2xx: Success - The action was successfully received, understood, and accepted.
+
+o 3xx: Redirection - Further action must be taken in order to complete the request
+
+o 4xx: Client Error - The request contains bad syntax or cannot be fulfilled
+
+o 5xx: Server Error - Tsshe server failed to fulfill an apparently valid request
+</code></pre>
+<p>状态描述：</p>
+<pre><code>&quot;200&quot;   ; OK
+&quot;201&quot;   ; Created
+&quot;202&quot;   ; Accepted
+&quot;204&quot;   ; No Content
+&quot;301&quot;   ; Moved Permanently
+&quot;302&quot;   ; Moved Temporarily
+&quot;304&quot;   ; Not Modified
+&quot;400&quot;   ; Bad Request
+&quot;401&quot;   ; Unauthorized
+&quot;403&quot;   ; Forbidden
+&quot;404&quot;   ; Not Found
+&quot;500&quot;   ; Internal Server Error
+&quot;501&quot;   ; Not Implemented
+&quot;502&quot;   ; Bad Gateway
+&quot;503&quot;   ; Service Unavailable
+</code></pre>
+<blockquote>
+<p>ctf的web题里如果碰到302重定向</p>
+<p>用bp可以看到重定向之前的内容</p>
+</blockquote>
+<p>响应头域包含：</p>
+<p><strong>1. Location</strong></p>
+<p>资源地址</p>
+<p>只允许写一个URL</p>
+<p>如果是重定向的情况，一定要写出定向后的新地址</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Location: http://www.w3.org/hypertext/WWW/NewLocation.html</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. Server</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Server: Apache/2.4.1 (Unix)</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. WWW-Authenticate</strong></p>
+<p>定义了使用何种验证方式（上文提到过的http验证）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WWW-Authenticate: Basic</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>消息体头域前文已经讲过啦，就不再赘述了捏</p>
+</blockquote>
+<h3 id="HTTP-1-0-的局限"><a href="#HTTP-1-0-的局限" class="headerlink" title="HTTP/1.0 的局限"></a>HTTP/1.0 的局限</h3><p>HTTP/1.0有两个大问题</p>
+<ol>
+<li><p>连接无法复用</p>
+<p> 因为每次请求都是一个单独的TCP请求，每一次都要来一次三次握手和慢启动， 导致延迟很高。</p>
+</li>
+<li><p>head of line blocking（队头堵塞）</p>
+<p> 服务器没有响应就不能发送下一个请求，会导致堵塞。</p>
+</li>
+</ol>
+<blockquote>
+<p>虽然我找到的全部资料都有提到http/1.0队头堵塞的问题，但是我觉得http/1.0根本不支持一次连接内同时发送多个请求，哪里来的队。 用队头堵塞这个词不太合适，用在http/1.1还是更加合适点。</p>
+</blockquote>
+<p>B1nz碎碎念：</p>
+<p>本来这篇文章的名字是叫一文啃透HTTP的， 但是篇幅太太太长了， 所以决定分成三篇文章^^ </p>
+<p>网上对http/1.0的分析并不是很多，毕竟用得少嘛，但其实http/1.1只是基于http/1.0做了改进。 对http/1.0熟悉的了解可以促进俺们对HTTP/1.1的学习。^^不偷懒。</p>
+
+      </section>
+
+      
+      
+        <nav class="article-nav">
+          
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+      <div class="card-cover" background-image-lazy data-img="/cover.jpg"></div>
+    
+    <div class="card-text">
+      
+        <a href="/2022/01/26/sqli2/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">SQL注入-sqli-labs-less11-20</h2>
+        </a>
+      
+      <div class="card-text--row">Older</div>
+    </div>
+  </article>
+</div>
+          
+        </nav>
+      
+
+      <section class="page-message-container layout-padding">
+        
+
+
+  
+  
+
+  
+  
+
+
+      </section>
+    </div>
+    <div class="widget-info">
+      <section class="widget-author widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-body">
+    
+      <img src="/banner.jpg" class="soft-size--round soft-style--box" alt="B1nz">
+    
+    
+      <h2>B1nz</h2>
+    
+    
+      <p>没头发掉了怎么办</p>
+    
+
+    <div class="count-box">
+      <div class="count-box--item">
+        <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
+</svg>
+        <span>3</span>
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+        2
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+        2
+      </div>
+    </div>
+  </div>
+</section>
+
+      
+
+      
+<section class="widet-notice widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-notice" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M512 945.02305225v28.15620663a24.27259221 24.27259221 0 0 1-24.27259221 24.27259335H394.0352a48.54518557 48.54518557 0 0 1-41.74885888-23.78714112l-110.68302222-184.47170332a132.04290333 132.04290333 0 0 1-17.47626667-48.54518557h118.4502511a200.97706667 200.97706667 0 0 1 76.21594113 14.56355556l20.38897777 133.49925888a48.54518557 48.54518557 0 0 0 36.40888888 27.67075555l16.01991111 2.91271112a24.27259221 24.27259221 0 0 1 20.38897778 25.72894889zM997.45185223 463.45481443a194.18074112 194.18074112 0 0 1-38.8361489 116.50844445 24.75804445 24.75804445 0 0 1-36.4088889 0l-34.95253333-34.95253333a24.27259221 24.27259221 0 0 1-2.91271111-30.58346667 97.09036999 97.09036999 0 0 0 0-106.79940665 24.27259221 24.27259221 0 0 1 2.91271111-30.58346666l34.95253333-34.95253334a24.75804445 24.75804445 0 0 1 18.93262223-7.28177777 26.2144 26.2144 0 0 1 17.47626667 9.70903665A194.18074112 194.18074112 0 0 1 997.45185223 463.45481443z m-194.18074112-388.36148111v776.72296335a48.54518557 48.54518557 0 0 1-48.54518556 48.54518443h-28.64165888a48.54518557 48.54518557 0 0 1-33.98163001-14.07810332l-145.63555556-143.20829668A291.27111111 291.27111111 0 0 0 342.57730333 657.63555556H172.18370333a145.63555556 145.63555556 0 0 1-145.63555556-145.63555556v-97.09036999a145.63555556 145.63555556 0 0 1 145.63555556-145.63555556h170.3936a291.27111111 291.27111111 0 0 0 206.31703779-85.43952668l145.63555555-143.20829554a48.54518557 48.54518557 0 0 1 33.98162888-14.07810446H754.72592555a48.54518557 48.54518557 0 0 1 48.54518556 48.54518555z" fill="currentColor"></path>
+</svg>
+    <span>NOTICE</span>
+  </div>
+  <div class="widget-body">
+    <p>今日掉发5根</p>
+  </div>
+</section>
+
+
+      <section class="widget-categorys widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+    <span>CATEGORYS</span>
+  </div>
+  <div class="widget-body">
+    <ul class="categorys-list">
+      
+        <li class="categorys-list-item">
+          <a href="/categories/networking/">
+            networking (1)
+          </a>
+        </li>
+      
+        <li class="categorys-list-item">
+          <a href="/categories/sqli/">
+            sqli (2)
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+</section>
+
+      <section class="widget-tags widget-item  layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+    <span>TAGS</span>
+  </div>
+  <div class="widget-body">
+    <div class="tags-cloud">
+      <a href="/tags/http/" style="font-size: 10px;" class="tags-cloud-0">http</a> <a href="/tags/sqli-labs/" style="font-size: 20px;" class="tags-cloud-10">sqli-labs</a>
+    </div>
+  </div>
+</section>
+    </div>
+  </article>
+</div>
+
+    <!-- footer container -->
+<footer id="footer" class="footer">
+  <div class="footer-container">
+     
+    <p>&copy; 2022 <a href="/" target="_blank">b1nz</a></p>
+
+    
+
+    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+
+    <p>
+      <a href="javascript:;" id="theme-light">🌞 浅色</a>
+      <a href="javascript:;" id="theme-dark">🌛 深色</a>
+      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
+    </p>
+  </div>
+</footer>
+  </div>
+
+  <div class="back-to-top-fixed soft-size--round soft-style--box">
+    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
+      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
+      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
+    </svg>
+  </div>
+
+  
+  <!-- aplayer -->
+
+
+<!-- dplayer -->
+
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  
+  <!-- 尾部用户自定义相关内容 -->
+</body>
+</html>
