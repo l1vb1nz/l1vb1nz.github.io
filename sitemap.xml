@@ -2,9 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/2022/01/28/http1/</loc>
+    <loc>https://l1vb1nz.github.io.git/2022/01/31/pikachu1/</loc>
     
-    <lastmod>2022-01-29</lastmod>
+    <lastmod>2022-01-31</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -13,7 +13,7 @@
   <url>
     <loc>https://l1vb1nz.github.io.git/2022/01/26/sqli2/</loc>
     
-    <lastmod>2022-01-26</lastmod>
+    <lastmod>2022-01-31</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -22,7 +22,16 @@
   <url>
     <loc>https://l1vb1nz.github.io.git/2022/01/25/sqli1/</loc>
     
-    <lastmod>2022-01-26</lastmod>
+    <lastmod>2022-01-31</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://l1vb1nz.github.io.git/2022/01/28/http1/</loc>
+    
+    <lastmod>2022-01-31</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -31,7 +40,7 @@
 
   <url>
     <loc>https://l1vb1nz.github.io.git/</loc>
-    <lastmod>2022-01-29</lastmod>
+    <lastmod>2022-01-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -39,14 +48,21 @@
   
   <url>
     <loc>https://l1vb1nz.github.io.git/tags/http/</loc>
-    <lastmod>2022-01-29</lastmod>
+    <lastmod>2022-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://l1vb1nz.github.io.git/tags/pikachu/</loc>
+    <lastmod>2022-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/tags/sqli-labs/</loc>
-    <lastmod>2022-01-29</lastmod>
+    <lastmod>2022-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -55,14 +71,14 @@
   
   <url>
     <loc>https://l1vb1nz.github.io.git/categories/networking/</loc>
-    <lastmod>2022-01-29</lastmod>
+    <lastmod>2022-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/categories/sqli/</loc>
-    <lastmod>2022-01-29</lastmod>
+    <lastmod>2022-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
