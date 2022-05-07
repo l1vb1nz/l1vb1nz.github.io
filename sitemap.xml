@@ -20,15 +20,6 @@
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/2022/05/08/bugku2/</loc>
-    
-    <lastmod>2022-05-07</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://l1vb1nz.github.io.git/2022/05/03/xss1/</loc>
     
     <lastmod>2022-05-07</lastmod>
@@ -90,13 +81,6 @@
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/tags/pikachu/</loc>
-    <lastmod>2022-05-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://l1vb1nz.github.io.git/tags/http/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
@@ -104,7 +88,7 @@
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/tags/sqli-labs/</loc>
+    <loc>https://l1vb1nz.github.io.git/tags/pikachu/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -112,6 +96,13 @@
   
   <url>
     <loc>https://l1vb1nz.github.io.git/tags/xss/</loc>
+    <lastmod>2022-05-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://l1vb1nz.github.io.git/tags/sqli-labs/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -134,14 +125,14 @@
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/categories/sqli/</loc>
+    <loc>https://l1vb1nz.github.io.git/categories/xss/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/categories/xss/</loc>
+    <loc>https://l1vb1nz.github.io.git/categories/sqli/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
