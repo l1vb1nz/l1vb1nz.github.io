@@ -95,14 +95,14 @@
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/tags/xss/</loc>
+    <loc>https://l1vb1nz.github.io.git/tags/sqli-labs/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/tags/sqli-labs/</loc>
+    <loc>https://l1vb1nz.github.io.git/tags/xss/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -125,14 +125,14 @@
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/categories/xss/</loc>
+    <loc>https://l1vb1nz.github.io.git/categories/sqli/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/categories/sqli/</loc>
+    <loc>https://l1vb1nz.github.io.git/categories/xss/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
