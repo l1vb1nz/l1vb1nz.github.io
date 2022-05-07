@@ -141,8 +141,9 @@
 <li>DOM型XSS</li>
 </ol>
 <h3 id="反射型XSS"><a href="#反射型XSS" class="headerlink" title="反射型XSS"></a>反射型XSS</h3><p><strong>特点</strong>：一次一执行</p>
-<pre><code>一般有这样的一个特点，输入后有输入的回显，且可以在url中看见传了一个参数
-</code></pre>
+<blockquote>
+<p>一般有这样的一个特点，输入后有输入的回显，且可以在url中看见传了一个参数</p>
+</blockquote>
 <p><strong>源码简单分析</strong>：</p>
 <pre><code>&lt;?php
 if (存在name值且name值不为空)&#123;
