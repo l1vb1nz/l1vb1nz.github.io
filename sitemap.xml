@@ -74,7 +74,7 @@
 
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/tags/http/</loc>
+    <loc>https://l1vb1nz.github.io.git/tags/bugku/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -82,6 +82,13 @@
   
   <url>
     <loc>https://l1vb1nz.github.io.git/tags/pikachu/</loc>
+    <lastmod>2022-05-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://l1vb1nz.github.io.git/tags/http/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -101,14 +108,21 @@
     <priority>0.2</priority>
   </url>
   
+
+  
   <url>
-    <loc>https://l1vb1nz.github.io.git/tags/bugku/</loc>
+    <loc>https://l1vb1nz.github.io.git/categories/wp/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
-
+  <url>
+    <loc>https://l1vb1nz.github.io.git/categories/URL%E9%87%8D%E5%AE%9A%E5%90%91/</loc>
+    <lastmod>2022-05-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/categories/networking/</loc>
@@ -125,21 +139,7 @@
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/categories/URL%E9%87%8D%E5%AE%9A%E5%90%91/</loc>
-    <lastmod>2022-05-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://l1vb1nz.github.io.git/categories/xss/</loc>
-    <lastmod>2022-05-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://l1vb1nz.github.io.git/categories/wp/</loc>
     <lastmod>2022-05-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
