@@ -22,7 +22,7 @@
 
   
 
-  <title>pikachu靶场-不安全的URL重定向 | Liv_binz的技术博客</title>
+  <title>Google dork | Liv_binz的技术博客</title>
 
   
 
@@ -90,20 +90,20 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">pikachu靶场-不安全的URL重定向</h1>
+          <h1 class="title-wrap">Google dork</h1>
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2022-01-31T07:14:08.028Z" itemprop="datePublished">2022-01-31</time>
+            <time  class="article-date" datetime="2022-06-19T11:10:59.019Z" itemprop="datePublished">2022-06-19</time>
           </h2>
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/wp/">📒 wp</a></li>
+    <li><a href="/categories/enumeration/">📒 enumeration</a></li>
   
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/pikachu/">🏷️ pikachu</a></li>
+    <li><a href="/tags/google-dork/">🏷️ google dork</a></li>
   
 </ul>
         </div>
@@ -127,19 +127,92 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>页面如图：</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220131151511.png"></p>
-<p>测试后发现点击第三个超链接会重定向到<code>unsafere.php</code></p>
-<p>观察一下burp proxy里面的HTTP history</p>
-<p>看一下请求的status line，如下：</p>
-<pre><code>GET /vul/urlredirect/urlredirect.php?url=unsafere.php HTTP/1.1
-</code></pre>
-<p>发现是在url里面传入的参数</p>
-<p>用百度来测试一下：</p>
-<pre><code>http://192.168.0.6:4001/vul/urlredirect/urlredirect.php?url=http://www.baidu.com
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220131182252.png"></p>
-<p>跳转成功 漏洞存在^^</p>
+        <h1 id="Google-dork"><a href="#Google-dork" class="headerlink" title="Google dork"></a>Google dork</h1><blockquote>
+<p>参考资料：</p>
+</blockquote>
+<blockquote>
+<p>1.<a target="_blank" rel="noopener" href="https://null-byte.wonderhowto.com/how-to/use-google-hack-googledorks-0163566/">https://null-byte.wonderhowto.com/how-to/use-google-hack-googledorks-0163566/</a></p>
+</blockquote>
+<blockquote>
+<p>2.<a target="_blank" rel="noopener" href="https://www.bbsmax.com/A/D85422QxzE/">https://www.bbsmax.com/A/D85422QxzE/</a></p>
+</blockquote>
+<h2 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h2><p>Google的默认搜索是模糊搜索，能够对长短语或者短句进行自动拆分</p>
+<h2 id="0x02-常用操作符"><a href="#0x02-常用操作符" class="headerlink" title="0x02 常用操作符"></a>0x02 常用操作符</h2><ol>
+<li>intitle</li>
+</ol>
+<p>&emsp;&emsp; 搜索文档标题中的文字 可以用来找到后门</p>
+<ol start="2">
+<li>allintitle</li>
+</ol>
+<p>&emsp;&emsp; 相当于在每个搜索词前加上intitle</p>
+<ol start="3">
+<li>inurl</li>
+</ol>
+<p>&emsp;&emsp; 搜索url里面的文字 可以用来找到后台</p>
+<ol start="4">
+<li>allinurl</li>
+</ol>
+<p>&emsp;&emsp; 相当于在每个搜索词前加上inurl</p>
+<ol start="5">
+<li>filetype</li>
+</ol>
+<p>&emsp;&emsp; 搜索特定的文件类型</p>
+<ol start="6">
+<li>ext</li>
+</ol>
+<p>&emsp;&emsp; 和filetype差不多 ，搜索特定的后缀名（extension）</p>
+<ol start="7">
+<li>intext</li>
+</ol>
+<p>&emsp;&emsp; 搜索页面里的内容 有点像谷歌默认的搜索</p>
+<ol start="8">
+<li>allintext</li>
+</ol>
+<p>&emsp;&emsp; 相当于在每个搜索词前加上intext</p>
+<ol start="9">
+<li>site</li>
+</ol>
+<p>&emsp;&emsp; 搜索指定网站的内容</p>
+<ol start="10">
+<li>cache</li>
+</ol>
+<p>&emsp;&emsp; 当一个链接无法访问时（或信息被屏蔽时）；当信息已经被修改，想看以前的信息时。</p>
+<ol start="11">
+<li>related</li>
+</ol>
+<p>&emsp;&emsp; 发现某一类信息</p>
+<ol start="12">
+<li>link</li>
+</ol>
+<p>&emsp;&emsp; 想搜索所有链接某网站的页面。（排除本站网页）</p>
+<ol start="13">
+<li><code>*</code></li>
+</ol>
+<p>&emsp;&emsp; 通配符，例如：”b1nz * blog”</p>
+<ol start="14">
+<li><code>.</code></li>
+</ol>
+<p>&emsp;&emsp; 与通配符星号不一样的是,匹配的是字符，不是字、短语等内容。保留的字符有[、(、-等</p>
+<ol start="17">
+<li>+ </li>
+</ol>
+<p>&emsp;&emsp; 必须包含加号后的内容、强制搜索</p>
+<ol start="18">
+<li>AND</li>
+</ol>
+<p>&emsp;&emsp; 逻辑与</p>
+<ol start="19">
+<li>(1 | 2)</li>
+</ol>
+<p>&emsp;&emsp; 逻辑或</p>
+<ol start="20">
+<li>- something</li>
+</ol>
+<p>&emsp;&emsp; 逻辑非</p>
+<h2 id="0x02-拓展使用"><a href="#0x02-拓展使用" class="headerlink" title="0x02  拓展使用"></a>0x02  拓展使用</h2><p>GHDB</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.exploit-db.com/">https://www.exploit-db.com/</a></p>
+</blockquote>
 
       </section>
 
@@ -154,8 +227,8 @@
     
     <div class="card-text">
       
-        <a href="/2022/05/03/xss1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">见框就插之XSS</h2>
+        <a href="/2022/06/28/web316-333/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">WP-ctfshow-XSS-316-333</h2>
         </a>
       
       <div class="card-text--row">Newer</div>
@@ -171,8 +244,8 @@
     
     <div class="card-text">
       
-        <a href="/2022/01/31/pikachu1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">pikachu靶场-SQLI-数字型注入（POST）</h2>
+        <a href="/2022/05/08/bugku1/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">bugku1 py爆破初尝试</h2>
         </a>
       
       <div class="card-text--row">Older</div>

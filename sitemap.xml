@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://l1vb1nz.github.io.git/2022/06/28/web316-333/</loc>
+    
+    <lastmod>2022-06-28</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://l1vb1nz.github.io.git/2022/06/19/google%20dork/</loc>
+    
+    <lastmod>2022-06-20</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://l1vb1nz.github.io.git/2022/01/31/pikachu1/</loc>
     
     <lastmod>2022-05-07</lastmod>
@@ -67,7 +85,7 @@
 
   <url>
     <loc>https://l1vb1nz.github.io.git/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -75,35 +93,49 @@
   
   <url>
     <loc>https://l1vb1nz.github.io.git/tags/bugku/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://l1vb1nz.github.io.git/tags/pikachu/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <loc>https://l1vb1nz.github.io.git/tags/google-dork/</loc>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/tags/http/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://l1vb1nz.github.io.git/tags/pikachu/</loc>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/tags/sqli-labs/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://l1vb1nz.github.io.git/tags/ctfshow/</loc>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/tags/xss/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -112,28 +144,35 @@
   
   <url>
     <loc>https://l1vb1nz.github.io.git/categories/wp/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://l1vb1nz.github.io.git/categories/enumeration/</loc>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/categories/networking/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/categories/sqli/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://l1vb1nz.github.io.git/categories/xss/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-07-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
